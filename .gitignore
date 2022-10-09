@@ -1,16 +1,17 @@
 .DS_Store
 node_modules
 
+.pnp.*
 .yarn/*
 !.yarn/patches
-!.yarn/releases
 !.yarn/plugins
+!.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-.pnp.*
 
 
 .env
+.env.*
 yarn-error.log
 
 .idea
@@ -23,3 +24,5 @@ package-lock.json
 dist
 
 qcert.key
+.env
+.env.dev
