@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import packageInfo from 'package.json';
+import packageInfo from '../package.json';
 import moment from 'moment';
 
 @Injectable()
 export class AppService {
   getHello(): string {
-    return `welcome to ${packageInfo.name}`;
+    return `welcome to server`;
   }
 
   getStatus(): string {

@@ -3,7 +3,9 @@ import { AppModule } from './app.module';
 import mongoose from 'mongoose';
 
 async function bootstrap() {
-  mongoose.set('debug', true);
+  if (process.env.NODE_ENV === 'development') {
+    mongoose.set('debug', true);
+  }
   const app = await NestFactory.create(AppModule);
   await app.listen(process.env.PORT);
 }
