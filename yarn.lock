@@ -964,6 +964,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/jwt@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@nestjs/jwt@npm:9.0.0"
+  dependencies:
+    "@types/jsonwebtoken": 8.5.8
+    jsonwebtoken: 8.5.1
+  peerDependencies:
+    "@nestjs/common": ^8.0.0 || ^9.0.0
+  checksum: c623bc710ace6345efc63d0dccff8d9f10b721b39efd94f4880bf8585a6a6a20ec00cc95fab6b913889382a0ff9327b4db02c12359eccc9e837d902bc9ba3676
+  languageName: node
+  linkType: hard
+
 "@nestjs/mapped-types@npm:*":
   version: 1.2.0
   resolution: "@nestjs/mapped-types@npm:1.2.0"
@@ -1234,6 +1246,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie-parser@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "@types/cookie-parser@npm:1.4.3"
+  dependencies:
+    "@types/express": "*"
+  checksum: f390f3af1b1711190dee2c2ecd9af33af81fbde8d81ee820dadb6fe1e0d80c3faba40af37c6ed36fb88b04b64870f6a021f7e9edceecd17c42fe22abe0af5005
+  languageName: node
+  linkType: hard
+
 "@types/cookiejar@npm:*":
   version: 2.1.2
   resolution: "@types/cookiejar@npm:2.1.2"
@@ -1286,7 +1307,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:^4.17.13":
+"@types/express@npm:*, @types/express@npm:^4.17.13":
   version: 4.17.14
   resolution: "@types/express@npm:4.17.14"
   dependencies:
@@ -1349,12 +1370,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^8.5.9":
+"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:^8.5.9":
   version: 8.5.9
   resolution: "@types/jsonwebtoken@npm:8.5.9"
   dependencies:
     "@types/node": "*"
   checksum: 33815ab02d1371b423118316b7706d2f2ec03eeee5e1494be72da50425d2384e5e0a09ea193f7a5ab4b4f6a9c5847147305f50e965f3d927a95bdf8adb471b2a
+  languageName: node
+  linkType: hard
+
+"@types/jsonwebtoken@npm:8.5.8":
+  version: 8.5.8
+  resolution: "@types/jsonwebtoken@npm:8.5.8"
+  dependencies:
+    "@types/node": "*"
+  checksum: 56738a918c543dba30786066959f801212e7fb5cd4ec53cf7b8d227711ed358834feb9e5141f7f88ec7c642bb39757330a5a8917e3b22e0ff9084940d35f0d70
   languageName: node
   linkType: hard
 
@@ -1383,6 +1413,47 @@ __metadata:
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: fd6bce2b674b6efc3db4c7c3d336bd70c90838e8439de639b909ce22f3720d21344f52427f1d9e57b265fcb7f6c018699b99e5e0c208a1a4823014269a6bf35b
+  languageName: node
+  linkType: hard
+
+"@types/passport-jwt@npm:^3.0.7":
+  version: 3.0.7
+  resolution: "@types/passport-jwt@npm:3.0.7"
+  dependencies:
+    "@types/express": "*"
+    "@types/jsonwebtoken": "*"
+    "@types/passport-strategy": "*"
+  checksum: c3631b9cb8a858e1ce366de04fe0e4fd350f265e09aad7e586c064ded6183dc011806c58c13a9e4535d66f900d76d6746e9c3d79b83a90ddc7dff679cbcfbe5d
+  languageName: node
+  linkType: hard
+
+"@types/passport-local@npm:^1.0.34":
+  version: 1.0.34
+  resolution: "@types/passport-local@npm:1.0.34"
+  dependencies:
+    "@types/express": "*"
+    "@types/passport": "*"
+    "@types/passport-strategy": "*"
+  checksum: c8e162f571c8685344f4496b1473645eb1244a2ecb1c810854d43ac8897145083ac7412b8d3a3231f72f27a22d57e526fc8421d8208c18cdff8f83266e875f37
+  languageName: node
+  linkType: hard
+
+"@types/passport-strategy@npm:*":
+  version: 0.2.35
+  resolution: "@types/passport-strategy@npm:0.2.35"
+  dependencies:
+    "@types/express": "*"
+    "@types/passport": "*"
+  checksum: e5949063ad8977ce1f7cf2a5df6bc379c4d43a959c9946bfed6570ef379c6c12d1713212a29b3b5aafc631c5ebe9bfe082116f3e75ca1bf45d79dd889671532d
+  languageName: node
+  linkType: hard
+
+"@types/passport@npm:*":
+  version: 1.0.11
+  resolution: "@types/passport@npm:1.0.11"
+  dependencies:
+    "@types/express": "*"
+  checksum: 7fea92aeb0d05bd872c17deadc1f1219dbdb23bae1b8f50e1c432ef755bce2b5f3fd60af76c38815f1fbaa047960d3638a4144221c4330457091be1f6e492168
   languageName: node
   linkType: hard
 
@@ -2667,10 +2738,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cookie-parser@npm:^1.4.6":
+  version: 1.4.6
+  resolution: "cookie-parser@npm:1.4.6"
+  dependencies:
+    cookie: 0.4.1
+    cookie-signature: 1.0.6
+  checksum: 1e5a63aa82e8eb4e02d2977c6902983dee87b02e87ec5ec43ac3cb1e72da354003716570cd5190c0ad9e8a454c9d3237f4ad6e2f16d0902205a96a1c72b77ba5
+  languageName: node
+  linkType: hard
+
 "cookie-signature@npm:1.0.6":
   version: 1.0.6
   resolution: "cookie-signature@npm:1.0.6"
   checksum: f4e1b0a98a27a0e6e66fd7ea4e4e9d8e038f624058371bf4499cfcd8f3980be9a121486995202ba3fca74fbed93a407d6d54d43a43f96fd28d0bd7a06761591a
+  languageName: node
+  linkType: hard
+
+"cookie@npm:0.4.1":
+  version: 0.4.1
+  resolution: "cookie@npm:0.4.1"
+  checksum: bd7c47f5d94ab70ccdfe8210cde7d725880d2fcda06d8e375afbdd82de0c8d3b73541996e9ce57d35f67f672c4ee6d60208adec06b3c5fc94cebb85196084cf8
   languageName: node
   linkType: hard
 
@@ -3763,19 +3851,24 @@ __metadata:
     "@nestjs/common": ^9.0.0
     "@nestjs/config": ^2.2.0
     "@nestjs/core": ^9.0.0
+    "@nestjs/jwt": ^9.0.0
     "@nestjs/mapped-types": "*"
     "@nestjs/mongoose": ^9.2.0
     "@nestjs/passport": ^9.0.0
     "@nestjs/platform-express": ^9.0.0
     "@nestjs/schematics": ^9.0.0
     "@nestjs/testing": ^9.0.0
+    "@types/cookie-parser": ^1.4.3
     "@types/express": ^4.17.13
     "@types/jest": 28.1.8
     "@types/jsonwebtoken": ^8.5.9
     "@types/node": ^16.0.0
+    "@types/passport-jwt": ^3.0.7
+    "@types/passport-local": ^1.0.34
     "@types/supertest": ^2.0.11
     "@typescript-eslint/eslint-plugin": ^5.0.0
     "@typescript-eslint/parser": ^5.0.0
+    cookie-parser: ^1.4.6
     eslint: ^8.0.1
     eslint-config-prettier: ^8.3.0
     eslint-plugin-prettier: ^4.0.0
@@ -3784,6 +3877,7 @@ __metadata:
     moment: ^2.29.4
     mongoose: ^6.6.5
     passport: ^0.6.0
+    passport-jwt: ^4.0.0
     passport-local: ^1.0.0
     prettier: ^2.3.2
     quickcert: ^1.1.2
@@ -4795,7 +4889,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:^8.5.1":
+"jsonwebtoken@npm:8.5.1, jsonwebtoken@npm:^8.2.0, jsonwebtoken@npm:^8.5.1":
   version: 8.5.1
   resolution: "jsonwebtoken@npm:8.5.1"
   dependencies:
@@ -5682,6 +5776,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"passport-jwt@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "passport-jwt@npm:4.0.0"
+  dependencies:
+    jsonwebtoken: ^8.2.0
+    passport-strategy: ^1.0.0
+  checksum: d0499ebb819c714d885a9c03a6c5d6dfae916c1a81ccb62357136d5bf477529327e9b8fc658f61f97c565651d2bd78eccec4543474a08e944132f0e2ec47cc3d
+  languageName: node
+  linkType: hard
+
 "passport-local@npm:^1.0.0":
   version: 1.0.0
   resolution: "passport-local@npm:1.0.0"
@@ -5691,7 +5795,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-strategy@npm:1.x.x":
+"passport-strategy@npm:1.x.x, passport-strategy@npm:^1.0.0":
   version: 1.0.0
   resolution: "passport-strategy@npm:1.0.0"
   checksum: 5086693f2508e538dffa55a338c89fe8192fb5f4478c71f80cd5890b8573419a098f4fec88b505374f60bbe9049f6f24b9f3992678612528a3370b4dc73354a2

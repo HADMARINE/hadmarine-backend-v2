@@ -5,7 +5,7 @@ export type SessionDocument = Session & Document;
 
 @Schema()
 export class Session {
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, unique: true })
   jwtid: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' })

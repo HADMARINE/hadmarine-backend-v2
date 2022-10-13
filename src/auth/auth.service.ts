@@ -1,19 +1,23 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/schemas/user.schema';
+import { User, UserDocument } from 'src/users/user.schema';
 import { UsersService } from 'src/users/users.service';
 import {
   TokenPayloadEntity,
   TOKEN_TYPE,
 } from './entities/token.payload.entity';
-import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { pbkdf2Sync, randomBytes } from 'crypto';
+import { SessionsService } from 'src/sessions/sessions.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private configService: ConfigService,
+    private sessionService: SessionsService,
+    private jwtService: JwtService,
   ) {}
 
   createToken(
@@ -55,13 +59,13 @@ export class AuthService {
   }
 
   createAuthToken(user: User, type: TOKEN_TYPE): string {
-    const tokenPayload = new TokenPayloadEntity(
-      user.userid,
+    const tokenPayload: TokenPayloadEntity = {
+      userid: user.userid,
       type,
-      user.authority,
-    );
+      authority: user.authority,
+    };
 
-    const result = this.createToken(tokenPayload.objectify(), type);
+    const result = this.createToken(tokenPayload, type);
 
     return result;
   }
@@ -69,16 +73,41 @@ export class AuthService {
   async verifyToken(
     token: string,
     type: TOKEN_TYPE,
-  ): Promise<Record<string, any>> {
-    const tokenValue: ReturnType<typeof jwt.verify> = () => {
+  ): Promise<Record<string, any> & jwt.JwtPayload> {
+    const tokenValue = ((): Record<string, any> & jwt.JwtPayload => {
       try {
-        return jwt.verify(token, this.configService.getOrThrow('TOKEN_KEY'));
+        const result = jwt.verify(
+          token,
+          this.configService.getOrThrow('TOKEN_KEY'),
+        );
+
+        if (typeof result === 'string') {
+          // TODO : Error
+          throw 'error';
+        }
+
+        return result;
       } catch (err) {
         if (err.name === 'TokenExpiredError') {
           throw new HttpException('Token expired', HttpStatus.UNAUTHORIZED);
         }
       }
-    };
+    })();
+
+    if (type === TOKEN_TYPE.REFRESH) {
+      const foundToken = await this.sessionService.findByJwtId(tokenValue.jti);
+      if (!foundToken) throw 'error'; // TODO : Error
+    }
+
+    if (!tokenValue?.type) {
+      throw 'error'; // TODO : Error
+    }
+
+    if (tokenValue.type !== type) {
+      throw 'error'; // TODO : Error
+    }
+
+    return tokenValue;
   }
 
   createPassword(
@@ -113,10 +142,33 @@ export class AuthService {
     return key === encryptedPassword;
   }
 
-  async validateUser(userid: string, password: string): Promise<User> {
+  async validateUser(userid: string, password: string): Promise<UserDocument> {
     const user = await this.usersService.findOne(userid);
     if (!user) {
-      throw new HttpException('Auth Failed', HttpStatus.FORBIDDEN);
+      throw new HttpException('Auth Failed', HttpStatus.FORBIDDEN); // TODO : Error
     }
+
+    if (!this.verifyPassword(password, user.password, user.enckey)) {
+      throw 'error'; // TODO : Error
+    }
+
+    return user;
+  }
+
+  getCookieJwtAccessToken(user: UserDocument): string {
+    const payload: TokenPayloadEntity = {
+      type: TOKEN_TYPE.ACCESS,
+      userid: user.userid,
+      authority: user.authority,
+    };
+
+    const token = this.jwtService.sign(payload);
+  }
+
+  getCookieLogout(): string[] {
+    return [
+      `Authentication=; HttpOnly; Path=/; Max-Age=0`,
+      `RefreshToken=; HttpOnly; Path=/; Max-Age=0`,
+    ];
   }
 }
