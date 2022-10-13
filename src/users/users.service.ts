@@ -7,7 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const createdUser = new this.userModel(createUserDto);
@@ -19,7 +19,7 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
+  async findOne(userid: string): Promise<User> {
     return `This action returns a #${id} user`;
   }
 

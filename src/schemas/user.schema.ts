@@ -15,7 +15,7 @@ export class User {
   enckey: string;
 
   @Prop({ type: String, default: 'normal' })
-  authority?: string;
+  authority: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
