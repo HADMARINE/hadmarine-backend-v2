@@ -1,0 +1,12 @@
+{
+    "messages": {
+        "PAGE_NOT_FOUND": "Page not found",
+        "JWT_TOKEN_INVALID": "Token is invalid",
+        "JWT_TOKEN_EXPIRED": "Token expired",
+        "AUTHORIZATION_INVALID": "Authorization invalid",
+        "AUTHORIZATION_FAILED": "Authorization failed",
+        "DATABASE_EXECUTION": "Failed to execute {action} to the {database} database",
+        "DATABASE_VALIDATION": "Failed to validate datas ({path}) on the {database} database",
+        "DATA_NOT_FOUND": "{name} data is not found"
+    }
+}

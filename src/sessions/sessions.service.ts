@@ -1,20 +1,27 @@
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Session, SessionDocument } from './session.schema';
 import { UserDocument } from 'src/users/user.schema';
+import { CreateSessionDto } from './dto/create-session.dto';
+import { ConfigService } from '@nestjs/config';
+import { DatabaseExecutionException } from 'src/errors/exceptions/DatabaseExecution.exception';
+import { DataNotFoundException } from 'src/errors/exceptions/DataNotFound.exception';
+import { DatabaseValidationException } from 'src/errors/exceptions/DatabaseValidation.exception';
 
 @Injectable()
 export class SessionsService {
   constructor(
     @InjectModel(Session.name) private sessionModel: Model<SessionDocument>,
+    private configService: ConfigService,
   ) {}
 
   async findByUser(user: UserDocument): Promise<SessionDocument[]> {
     const sessions = await this.sessionModel.find({ user: user._id }).exec();
     if (!sessions.length) {
-      // TODO : RETURN ERROR
-      throw 'error';
+      throw new DataNotFoundException({ name: 'session' });
     }
 
     return sessions;
@@ -24,8 +31,7 @@ export class SessionsService {
     const session = await this.sessionModel.findOne({ jwtid: id }).exec();
 
     if (!session) {
-      // TODO : RETURN ERROR
-      throw 'error';
+      throw new DataNotFoundException({ name: 'session' });
     }
 
     return session;
@@ -33,7 +39,7 @@ export class SessionsService {
 
   // async findByExpire() {}
 
-  async removeExpired() {
+  async removeExpired(): Promise<number> {
     try {
       const result = await this.sessionModel
         .deleteMany({
@@ -41,12 +47,60 @@ export class SessionsService {
         })
         .exec();
 
-      if (result.deletedCount === 0) {
-        throw 'error'; // TODO: Error
-      }
       return result.deletedCount;
     } catch {
-      throw 'error'; // TODO: Error
+      throw new DatabaseExecutionException({
+        action: 'Delete',
+        database: 'Session',
+      });
     }
+  }
+
+  async remove(jwtid: string) {
+    try {
+      const result = await this.sessionModel.findOneAndDelete({
+        jwtid,
+      });
+
+      if (!result) {
+        throw new DataNotFoundException({ name: 'session' });
+      }
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'Delete',
+        database: 'session',
+      });
+    }
+  }
+
+  async removeUnsure(token: string | undefined) {
+    const decodedToken = jwt.verify(
+      token,
+      this.configService.getOrThrow('REFRESH_TOKEN_KEY'),
+    );
+    if (typeof token !== 'string') {
+      await this.remove((decodedToken as jwt.JwtPayload).jti);
+    }
+  }
+
+  async create(createSessonDto: CreateSessionDto) {
+    const session = new this.sessionModel({ ...createSessonDto });
+    try {
+      await session.save();
+    } catch (e) {
+      if (e instanceof mongoose.Error.ValidationError) {
+        const paths = Object.keys(e.errors);
+        throw new DatabaseValidationException({
+          database: 'session',
+          path: paths.toString(),
+        });
+      } else {
+        throw new DatabaseExecutionException({
+          action: 'create',
+          database: 'session',
+        });
+      }
+    }
+    return session;
   }
 }

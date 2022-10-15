@@ -15,4 +15,6 @@
     return 0;
   }
   ```
-- [ ] Error code handler
+- [x] Error code handler
+- [ ] env var verifier
+- [ ] Dto class verifier

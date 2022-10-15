@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User, UserDocument } from 'src/users/user.schema';
+import { UserDocument } from 'src/users/user.schema';
 import { UsersService } from 'src/users/users.service';
 import {
   TokenPayloadEntity,
@@ -9,7 +9,10 @@ import {
 import jwt from 'jsonwebtoken';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import { SessionsService } from 'src/sessions/sessions.service';
-import { JwtService } from '@nestjs/jwt';
+import ms from 'ms';
+import { JwtTokenInvalidException } from 'src/errors/exceptions/JwtTokenInvalid.exception';
+import { JwtTokenExpiredException } from 'src/errors/exceptions/JwtTokenExpired.exception';
+import { AuthorizationFailedException } from 'src/errors/exceptions/AuthorizationFailed.exception';
 
 @Injectable()
 export class AuthService {
@@ -17,22 +20,32 @@ export class AuthService {
     private usersService: UsersService,
     private configService: ConfigService,
     private sessionService: SessionsService,
-    private jwtService: JwtService,
   ) {}
 
-  createToken(
+  async createToken(
     payload: Record<string, any>,
     type: TOKEN_TYPE,
     expiration: string | number = undefined,
-  ): string {
+  ): Promise<string> {
     const expireTime = ((): string | number => {
       if (expiration) return expiration;
       if (type === TOKEN_TYPE.ACCESS) {
-        return '10min';
+        return this.configService.getOrThrow('ACCESS_TOKEN_EXPIRATION_TIME');
       } else if (type === TOKEN_TYPE.REFRESH) {
-        return '1d';
+        return this.configService.getOrThrow('REFRESH_TOKEN_EXPIRATION_TIME');
       } else {
         return '1h';
+      }
+    })();
+
+    const tokenKey = ((): string => {
+      switch (type) {
+        case TOKEN_TYPE.ACCESS:
+          return this.configService.getOrThrow('ACCESS_TOKEN_KEY');
+        case TOKEN_TYPE.REFRESH:
+          return this.configService.getOrThrow('REFRESH_TOKEN_KEY');
+        case TOKEN_TYPE.OTHER:
+          return this.configService.getOrThrow('TOKEN_KEY');
       }
     })();
 
@@ -45,27 +58,34 @@ export class AuthService {
           : this.configService.get('REQUEST_URI') || '*',
     };
 
-    const result = jwt.sign(
-      payload,
-      this.configService.getOrThrow('TOKEN_KEY'),
-      jwtSettings,
-    );
+    const result = jwt.sign(payload, tokenKey, jwtSettings);
 
     if (type === TOKEN_TYPE.REFRESH) {
-      // TODO : This might register the token
+      const jwtDecoded: any = jwt.decode(result);
+      if (!jwtDecoded.exp || !jwtDecoded.jti || !jwtDecoded.userid) {
+        throw new JwtTokenInvalidException();
+      }
+      await this.sessionService.create({
+        expire: jwtDecoded.exp,
+        user: jwtDecoded.userid,
+        jwtid: jwtDecoded.jti,
+      });
     }
 
     return result;
   }
 
-  createAuthToken(user: User, type: TOKEN_TYPE): string {
+  async createAuthToken(
+    user: UserDocument,
+    type: TOKEN_TYPE.ACCESS | TOKEN_TYPE.REFRESH,
+  ): Promise<string> {
     const tokenPayload: TokenPayloadEntity = {
       userid: user.userid,
       type,
       authority: user.authority,
     };
 
-    const result = this.createToken(tokenPayload, type);
+    const result = await this.createToken(tokenPayload, type);
 
     return result;
   }
@@ -82,29 +102,31 @@ export class AuthService {
         );
 
         if (typeof result === 'string') {
-          // TODO : Error
-          throw 'error';
+          throw new JwtTokenInvalidException();
         }
 
         return result;
       } catch (err) {
         if (err.name === 'TokenExpiredError') {
-          throw new HttpException('Token expired', HttpStatus.UNAUTHORIZED);
+          throw new JwtTokenExpiredException();
         }
       }
     })();
 
     if (type === TOKEN_TYPE.REFRESH) {
-      const foundToken = await this.sessionService.findByJwtId(tokenValue.jti);
-      if (!foundToken) throw 'error'; // TODO : Error
+      try {
+        await this.sessionService.findByJwtId(tokenValue.jti);
+      } catch {
+        throw new JwtTokenInvalidException();
+      }
     }
 
     if (!tokenValue?.type) {
-      throw 'error'; // TODO : Error
+      throw new JwtTokenInvalidException();
     }
 
     if (tokenValue.type !== type) {
-      throw 'error'; // TODO : Error
+      throw new JwtTokenInvalidException();
     }
 
     return tokenValue;
@@ -145,24 +167,30 @@ export class AuthService {
   async validateUser(userid: string, password: string): Promise<UserDocument> {
     const user = await this.usersService.findOne(userid);
     if (!user) {
-      throw new HttpException('Auth Failed', HttpStatus.FORBIDDEN); // TODO : Error
+      throw new AuthorizationFailedException();
     }
 
     if (!this.verifyPassword(password, user.password, user.enckey)) {
-      throw 'error'; // TODO : Error
+      throw new AuthorizationFailedException();
     }
 
     return user;
   }
 
-  getCookieJwtAccessToken(user: UserDocument): string {
-    const payload: TokenPayloadEntity = {
-      type: TOKEN_TYPE.ACCESS,
-      userid: user.userid,
-      authority: user.authority,
-    };
-
-    const token = this.jwtService.sign(payload);
+  async getCookieAuthenticationTokenGenerationIntegrated(
+    user: UserDocument,
+    type: TOKEN_TYPE.ACCESS | TOKEN_TYPE.REFRESH,
+  ): Promise<string> {
+    const token = await this.createAuthToken(user, type);
+    return `${
+      type === TOKEN_TYPE.ACCESS ? `Authentication` : `RefreshToken`
+    }=${token}; HttpOnly; Path=/' Max-Age=${ms(
+      this.configService.getOrThrow(
+        type === TOKEN_TYPE.ACCESS
+          ? 'ACCESS_TOKEN_EXPIRATION_TIME'
+          : 'REFRESH_TOKEN_EXPIRATION_TIME',
+      ),
+    )};`;
   }
 
   getCookieLogout(): string[] {
