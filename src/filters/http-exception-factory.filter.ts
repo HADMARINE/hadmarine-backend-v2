@@ -3,9 +3,10 @@ import {
   Catch,
   ExceptionFilter,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { HttpExceptionFactory } from '../errors/httpExceptionFactory.class';
+import { HttpExceptionFactory } from '../errors/http-exception-factory.class';
 import { getI18nContextFromArgumentsHost } from 'nestjs-i18n';
 
 @Catch(HttpException)
@@ -18,14 +19,19 @@ export class HttpExceptionFactoryFilter implements ExceptionFilter {
 
     const i18n = getI18nContextFromArgumentsHost(host);
 
+    const code =
+      exception.errorDetails?.code ||
+      HttpStatus[status as unknown as keyof typeof HttpStatus] ||
+      'INTERNAL_SERVER_ERROR';
+
     response.status(status).json({
       status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      code: exception.errorDetails.code,
+      code,
       message: await i18n.t(
-        `exceptions.messages.${exception.errorDetails.code}`,
-        exception.errorDetails.exceptionFilter,
+        `exceptions.messages.${code}`,
+        exception.errorDetails?.exceptionFilter || undefined,
       ),
     });
   }

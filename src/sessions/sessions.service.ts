@@ -7,9 +7,10 @@ import { Session, SessionDocument } from './session.schema';
 import { UserDocument } from 'src/users/user.schema';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseExecutionException } from 'src/errors/exceptions/DatabaseExecution.exception';
-import { DataNotFoundException } from 'src/errors/exceptions/DataNotFound.exception';
-import { DatabaseValidationException } from 'src/errors/exceptions/DatabaseValidation.exception';
+import { DatabaseExecutionException } from 'src/errors/exceptions/database-execution.exception';
+import { DataNotFoundException } from 'src/errors/exceptions/data-not-found.exception';
+import { DatabaseValidationException } from 'src/errors/exceptions/database-validation.exception';
+import { JwtTokenInvalidException } from 'src/errors/exceptions/jwt-token-invalid.exception';
 
 @Injectable()
 export class SessionsService {
@@ -50,8 +51,8 @@ export class SessionsService {
       return result.deletedCount;
     } catch {
       throw new DatabaseExecutionException({
-        action: 'Delete',
-        database: 'Session',
+        action: 'delete',
+        database: 'session',
       });
     }
   }
@@ -67,18 +68,27 @@ export class SessionsService {
       }
     } catch {
       throw new DatabaseExecutionException({
-        action: 'Delete',
+        action: 'delete',
         database: 'session',
       });
     }
   }
 
   async removeUnsure(token: string | undefined) {
-    const decodedToken = jwt.verify(
-      token,
-      this.configService.getOrThrow('REFRESH_TOKEN_KEY'),
-    );
-    if (typeof token !== 'string') {
+    if (typeof token !== 'string') return;
+
+    const decodedToken = (() => {
+      try {
+        return jwt.verify(
+          token,
+          this.configService.getOrThrow('REFRESH_TOKEN_KEY'),
+        );
+      } catch {
+        return undefined;
+      }
+    })();
+
+    if (typeof decodedToken !== 'string') {
       await this.remove((decodedToken as jwt.JwtPayload).jti);
     }
   }

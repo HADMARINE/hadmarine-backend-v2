@@ -1,11 +1,12 @@
 import { Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { TOKEN_TYPE } from './entities/token.payload.entity';
-import { LocalAuthGuard } from './guards/localAuth.guard';
-import { RequestWithUser } from './interfaces/requestWithUser.interface';
-import { JwtRefreshGuard } from './guards/jwtRefresh.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RequestWithUser } from './interfaces/request-with-user.interface';
+import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
 import { SessionsService } from 'src/sessions/sessions.service';
 import { Request } from 'express';
+import { Throttle } from '@nestjs/throttler';
+import { TokenTypeEnum } from './enum/token-type.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +17,7 @@ export class AuthController {
 
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
+  @Throttle(5, 300)
   @Post('login')
   async login(@Req() request: RequestWithUser) {
     const { user } = request;
@@ -23,13 +25,13 @@ export class AuthController {
     const accessTokenCookie =
       await this.authService.getCookieAuthenticationTokenGenerationIntegrated(
         user,
-        TOKEN_TYPE.ACCESS,
+        TokenTypeEnum.ACCESS,
       );
 
     const refreshTokenCookie =
       await this.authService.getCookieAuthenticationTokenGenerationIntegrated(
         user,
-        TOKEN_TYPE.REFRESH,
+        TokenTypeEnum.REFRESH,
       );
 
     request.res.setHeader('Set-Cookie', [
@@ -47,7 +49,7 @@ export class AuthController {
     const accessTokenCookie =
       await this.authService.getCookieAuthenticationTokenGenerationIntegrated(
         request.user,
-        TOKEN_TYPE.ACCESS,
+        TokenTypeEnum.ACCESS,
       );
 
     request.res.setHeader('Set-Cookie', accessTokenCookie);

@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { NextFunction } from 'express';
-import { PageNotFoundException } from 'src/errors/exceptions/PageNotFound.exception';
+import { PageNotFoundException } from 'src/errors/exceptions/page-not-found.exception';
 
 @Catch(NotFoundException)
 export class NotFoundExceptionFilter implements ExceptionFilter {

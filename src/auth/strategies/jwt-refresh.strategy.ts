@@ -3,12 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtTokenInvalidException } from 'src/errors/exceptions/JwtTokenInvalid.exception';
+import { JwtTokenInvalidException } from 'src/errors/exceptions/jwt-token-invalid.exception';
 import { UsersService } from 'src/users/users.service';
-import { TokenPayloadEntity } from '../entities/token.payload.entity';
+import { TokenPayloadEntity } from '../entities/token-payload.entity';
 import jwt from 'jsonwebtoken';
 import { SessionsService } from 'src/sessions/sessions.service';
-import { AuthorizationInvalidException } from 'src/errors/exceptions/AuthorizationInvalid.exception';
+import { AuthorizationInvalidException } from 'src/errors/exceptions/authorization-invalid.exception';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(

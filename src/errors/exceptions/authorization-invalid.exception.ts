@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { HttpExceptionFactory } from '../httpExceptionFactory.class';
+import { HttpExceptionFactory } from '../http-exception-factory.class';
 
 export class AuthorizationInvalidException extends HttpExceptionFactory {
   constructor() {

@@ -7,6 +7,8 @@
         "AUTHORIZATION_FAILED": "Authorization failed",
         "DATABASE_EXECUTION": "Failed to execute {action} to the {database} database",
         "DATABASE_VALIDATION": "Failed to validate datas ({path}) on the {database} database",
-        "DATA_NOT_FOUND": "{name} data is not found"
+        "DATA_NOT_FOUND": "{name} data is not found",
+        "TOO_MANY_REQUESTS": "Too many requests. Try again later",
+        "INTERNAL_SERVER_ERROR": "Unknown internal server error occured"
     }
 }

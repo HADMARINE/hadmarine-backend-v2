@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { AuthorityEnum } from './authority.enum';
 
 export type UserDocument = User & Document;
 
@@ -14,8 +15,8 @@ export class User {
   @Prop({ type: String, required: true })
   enckey: string;
 
-  @Prop({ type: String, default: 'normal' })
-  authority: string;
+  @Prop({ type: [Number], default: [AuthorityEnum.NORMAL] })
+  authority: AuthorityEnum[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

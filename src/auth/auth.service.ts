@@ -1,37 +1,35 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserDocument } from 'src/users/user.schema';
 import { UsersService } from 'src/users/users.service';
-import {
-  TokenPayloadEntity,
-  TOKEN_TYPE,
-} from './entities/token.payload.entity';
+import { TokenPayloadEntity } from './entities/token-payload.entity';
 import jwt from 'jsonwebtoken';
 import { pbkdf2Sync, randomBytes } from 'crypto';
 import { SessionsService } from 'src/sessions/sessions.service';
 import ms from 'ms';
-import { JwtTokenInvalidException } from 'src/errors/exceptions/JwtTokenInvalid.exception';
-import { JwtTokenExpiredException } from 'src/errors/exceptions/JwtTokenExpired.exception';
-import { AuthorizationFailedException } from 'src/errors/exceptions/AuthorizationFailed.exception';
+import { JwtTokenInvalidException } from 'src/errors/exceptions/jwt-token-invalid.exception';
+import { JwtTokenExpiredException } from 'src/errors/exceptions/jwt-token-expired.exception';
+import { AuthorizationFailedException } from 'src/errors/exceptions/authorization-failed.exception';
+import { TokenTypeEnum } from './enum/token-type.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
     private configService: ConfigService,
     private sessionService: SessionsService,
   ) {}
 
   async createToken(
     payload: Record<string, any>,
-    type: TOKEN_TYPE,
+    type: TokenTypeEnum,
     expiration: string | number = undefined,
   ): Promise<string> {
     const expireTime = ((): string | number => {
       if (expiration) return expiration;
-      if (type === TOKEN_TYPE.ACCESS) {
+      if (type === TokenTypeEnum.ACCESS) {
         return this.configService.getOrThrow('ACCESS_TOKEN_EXPIRATION_TIME');
-      } else if (type === TOKEN_TYPE.REFRESH) {
+      } else if (type === TokenTypeEnum.REFRESH) {
         return this.configService.getOrThrow('REFRESH_TOKEN_EXPIRATION_TIME');
       } else {
         return '1h';
@@ -40,18 +38,18 @@ export class AuthService {
 
     const tokenKey = ((): string => {
       switch (type) {
-        case TOKEN_TYPE.ACCESS:
+        case TokenTypeEnum.ACCESS:
           return this.configService.getOrThrow('ACCESS_TOKEN_KEY');
-        case TOKEN_TYPE.REFRESH:
+        case TokenTypeEnum.REFRESH:
           return this.configService.getOrThrow('REFRESH_TOKEN_KEY');
-        case TOKEN_TYPE.OTHER:
+        case TokenTypeEnum.OTHER:
           return this.configService.getOrThrow('TOKEN_KEY');
       }
     })();
 
     const jwtSettings: jwt.SignOptions = {
       expiresIn: expireTime,
-      jwtid: `${Date.now()}_${TOKEN_TYPE[type]}`,
+      jwtid: `${Date.now()}_${TokenTypeEnum[type]}`,
       issuer:
         this.configService.getOrThrow('NODE_ENV') === 'development'
           ? '*'
@@ -60,7 +58,7 @@ export class AuthService {
 
     const result = jwt.sign(payload, tokenKey, jwtSettings);
 
-    if (type === TOKEN_TYPE.REFRESH) {
+    if (type === TokenTypeEnum.REFRESH) {
       const jwtDecoded: any = jwt.decode(result);
       if (!jwtDecoded.exp || !jwtDecoded.jti || !jwtDecoded.userid) {
         throw new JwtTokenInvalidException();
@@ -77,7 +75,7 @@ export class AuthService {
 
   async createAuthToken(
     user: UserDocument,
-    type: TOKEN_TYPE.ACCESS | TOKEN_TYPE.REFRESH,
+    type: TokenTypeEnum.ACCESS | TokenTypeEnum.REFRESH,
   ): Promise<string> {
     const tokenPayload: TokenPayloadEntity = {
       userid: user.userid,
@@ -92,7 +90,7 @@ export class AuthService {
 
   async verifyToken(
     token: string,
-    type: TOKEN_TYPE,
+    type: TokenTypeEnum,
   ): Promise<Record<string, any> & jwt.JwtPayload> {
     const tokenValue = ((): Record<string, any> & jwt.JwtPayload => {
       try {
@@ -113,7 +111,7 @@ export class AuthService {
       }
     })();
 
-    if (type === TOKEN_TYPE.REFRESH) {
+    if (type === TokenTypeEnum.REFRESH) {
       try {
         await this.sessionService.findByJwtId(tokenValue.jti);
       } catch {
@@ -179,14 +177,14 @@ export class AuthService {
 
   async getCookieAuthenticationTokenGenerationIntegrated(
     user: UserDocument,
-    type: TOKEN_TYPE.ACCESS | TOKEN_TYPE.REFRESH,
+    type: TokenTypeEnum.ACCESS | TokenTypeEnum.REFRESH,
   ): Promise<string> {
     const token = await this.createAuthToken(user, type);
     return `${
-      type === TOKEN_TYPE.ACCESS ? `Authentication` : `RefreshToken`
+      type === TokenTypeEnum.ACCESS ? `Authentication` : `RefreshToken`
     }=${token}; HttpOnly; Path=/' Max-Age=${ms(
       this.configService.getOrThrow(
-        type === TOKEN_TYPE.ACCESS
+        type === TokenTypeEnum.ACCESS
           ? 'ACCESS_TOKEN_EXPIRATION_TIME'
           : 'REFRESH_TOKEN_EXPIRATION_TIME',
       ),

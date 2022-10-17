@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { HttpExceptionFactory } from '../httpExceptionFactory.class';
+import { HttpExceptionFactory } from '../http-exception-factory.class';
 
 export class DatabaseExecutionException extends HttpExceptionFactory {
   constructor(props?: { action?: string; database?: string }) {
