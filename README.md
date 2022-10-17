@@ -17,4 +17,14 @@
   ```
 - [x] Error code handler
 - [ ] env var verifier
-- [ ] Dto class verifier
+- [ ] Dto class verifier : https://docs.nestjs.com/techniques/validation
+- [ ] Health Checks : https://docs.nestjs.com/recipes/terminus
+- [ ] CronJob : https://docs.nestjs.com/techniques/task-scheduling
+
+
+# REF
+## Token invalidation
+https://medium.com/@byeduardoac/managing-jwt-token-expiration-bfb2bd6ea584
+
+## NestJS basics
+https://wanago.io/2020/05/25/api-nestjs-authenticating-users-bcrypt-passport-jwt-cookies/
