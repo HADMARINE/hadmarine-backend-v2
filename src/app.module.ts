@@ -9,18 +9,13 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { NotFoundExceptionFilter } from './filters/not-found-exception.filter';
 import { HttpExceptionFactoryFilter } from './filters/http-exception-factory.filter';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { AuthController } from './auth/auth.controller';
-import { UsersController } from './users/users.controller';
-import { BlogpostsController } from './blogposts/blogposts.controller';
-import { PortfoliosController } from './portfolios/portfolios.controller';
-import { AuthService } from './auth/auth.service';
-import { UsersService } from './users/users.service';
-import { BlogpostsService } from './blogposts/blogposts.service';
-import { PortfoliosService } from './portfolios/portfolios.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BlogpostsModule } from './blogposts/blogposts.module';
 import { PortfoliosModule } from './portfolios/portfolios.module';
+import { HealthModule } from './health/health.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -54,10 +49,13 @@ import { PortfoliosModule } from './portfolios/portfolios.module';
         limit: config.getOrThrow('THROTTLE_LIMIT'),
       }),
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     BlogpostsModule,
     PortfoliosModule,
+    HealthModule,
+    TasksModule,
   ],
   controllers: [
     AppController,

@@ -4,9 +4,12 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import express from 'express';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const logger = new Logger('Main');
 
   const middlewares: Parameters<typeof app.use> = [
     cookieParser(),
@@ -34,6 +37,6 @@ async function bootstrap() {
 
   app.use(middlewares);
   await app.listen(process.env.PORT);
-  console.log(`Application is running on ${await app.getUrl()}`);
+  logger.log(`Application is running on ${await app.getUrl()}`);
 }
 bootstrap();

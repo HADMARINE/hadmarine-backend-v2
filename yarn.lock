@@ -1898,6 +1898,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/axios@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@nestjs/axios@npm:0.1.0"
+  dependencies:
+    axios: 0.27.2
+  peerDependencies:
+    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0
+    reflect-metadata: ^0.1.12
+    rxjs: ^6.0.0 || ^7.0.0
+  checksum: 72929b25caacb85517bae962b13d865a31aa3984aa9e55305e0a2306e54338fe51a7eb38ca38cab0fe8b4116fb35219bd02c8b0c4cac70e7b5aeb84d03a1db3f
+  languageName: node
+  linkType: hard
+
 "@nestjs/cli@npm:^9.0.0":
   version: 9.1.4
   resolution: "@nestjs/cli@npm:9.1.4"
@@ -2131,6 +2144,21 @@ __metadata:
     "@fastify/static":
       optional: true
   checksum: 1acfddac35f3c41298da30c865e1bd61a979c6d3fdba3056f71474f65aca51d001c5eff8775615d3459ee41e578ffbb577ee529409f4f7baaf9466b8e12626de
+  languageName: node
+  linkType: hard
+
+"@nestjs/terminus@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "@nestjs/terminus@npm:9.1.2"
+  dependencies:
+    boxen: 5.1.2
+    check-disk-space: 3.3.1
+  peerDependencies:
+    "@nestjs/common": 9.x
+    "@nestjs/core": 9.x
+    reflect-metadata: 0.1.x
+    rxjs: 7.x
+  checksum: 9337b4fb1b01b477ccdb5b982477bed12939b9ce159ff90873c4b8be582c50214cef03dd9037e6b6033c56c4e2635897a9cbd1d26638d3468d7911fe41249d29
   languageName: node
   linkType: hard
 
@@ -3266,6 +3294,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
+  languageName: node
+  linkType: hard
+
 "babel-jest@npm:^28.1.3":
   version: 28.1.3
   resolution: "babel-jest@npm:28.1.3"
@@ -3459,7 +3497,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"boxen@npm:^5.0.1":
+"boxen@npm:5.1.2, boxen@npm:^5.0.1":
   version: 5.1.2
   resolution: "boxen@npm:5.1.2"
   dependencies:
@@ -3697,6 +3735,13 @@ __metadata:
   version: 0.0.2
   resolution: "charenc@npm:0.0.2"
   checksum: 81dcadbe57e861d527faf6dd3855dc857395a1c4d6781f4847288ab23cffb7b3ee80d57c15bba7252ffe3e5e8019db767757ee7975663ad2ca0939bb8fcaf2e5
+  languageName: node
+  linkType: hard
+
+"check-disk-space@npm:3.3.1":
+  version: 3.3.1
+  resolution: "check-disk-space@npm:3.3.1"
+  checksum: 90b7b77ab932be0c0a24c5f68778d3c0e9179686282b04d84b1272a511a1c55b9f184c98f12b1a1628b832934971d66e63acaa9e3c82f14d9d221a4848b4cf8b
   languageName: node
   linkType: hard
 
@@ -4896,6 +4941,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"follow-redirects@npm:^1.14.9":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
 "fork-ts-checker-webpack-plugin@npm:7.2.13":
   version: 7.2.13
   resolution: "fork-ts-checker-webpack-plugin@npm:7.2.13"
@@ -5184,6 +5239,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hadmarine-backend-v2@workspace:."
   dependencies:
+    "@nestjs/axios": ^0.1.0
     "@nestjs/cli": ^9.0.0
     "@nestjs/common": ^9.0.0
     "@nestjs/config": ^2.2.0
@@ -5196,6 +5252,7 @@ __metadata:
     "@nestjs/schedule": ^2.1.0
     "@nestjs/schematics": ^9.0.0
     "@nestjs/swagger": ^6.1.2
+    "@nestjs/terminus": ^9.1.2
     "@nestjs/testing": ^9.0.0
     "@nestjs/throttler": ^3.1.0
     "@types/cookie-parser": ^1.4.3

@@ -18,7 +18,7 @@
 - [x] Error code handler
 - [ ] env var verifier
 - [ ] Dto class verifier : https://docs.nestjs.com/techniques/validation
-- [ ] Health Checks : https://docs.nestjs.com/recipes/terminus
+- [x] Health Checks : https://docs.nestjs.com/recipes/terminus
 - [ ] CronJob : https://docs.nestjs.com/techniques/task-scheduling
 
 
