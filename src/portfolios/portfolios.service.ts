@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Roles } from 'src/decorators/roles.decorator';
+import { AuthorityEnum } from 'src/users/authority.enum';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
+import { Portfolio } from './portfolio.schema';
 
 @Injectable()
 export class PortfoliosService {
-  create(createPortfolioDto: CreatePortfolioDto) {
-    return 'This action adds a new portfolio';
+  constructor(
+    @InjectModel(Portfolio.name) private portfolioModel: Model<Portfolio>,
+  ) {}
+
+  // @Roles(AuthorityEnum.ADMIN)
+  async create(createPortfolioDto: CreatePortfolioDto): Promise<undefined> {
+    return;
   }
 
   findAll() {

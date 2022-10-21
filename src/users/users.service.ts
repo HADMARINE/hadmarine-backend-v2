@@ -16,7 +16,7 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService)) private authService: AuthService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+  async create(createUserDto: CreateUserDto): Promise<undefined> {
     const { password, ...remainings } = createUserDto;
     const createdPassword = this.authService.createPassword(password);
     const createdUser = new this.userModel({
@@ -39,7 +39,7 @@ export class UsersService {
       });
     }
 
-    return createdUser;
+    return;
   }
 
   async findOne(userid: string): Promise<UserDocument | null> {

@@ -9,6 +9,11 @@
         "DATABASE_VALIDATION": "Failed to validate datas ({path}) on the {database} database",
         "DATA_NOT_FOUND": "{name} data is not found",
         "TOO_MANY_REQUESTS": "Too many requests. Try again later",
-        "INTERNAL_SERVER_ERROR": "Unknown internal server error occured"
+        "INTERNAL_SERVER_ERROR": "Unknown internal server error occured",
+        "PARAMETERS_INVALID": "Parameters were invalidly provided"
+    },
+    "parameter_details": {
+        "data_null": "is not provided.",
+        "data_invalid": "is invalid."
     }
 }

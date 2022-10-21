@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import express from 'express';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { ParametersInvalidException } from './errors/exceptions/parameters-invalid.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,9 @@ async function bootstrap() {
     express.json(),
     express.urlencoded({ extended: true }),
   ];
+  mongoose.set('debug', true);
+
+  console.log(process.env.NODE_ENV);
 
   if (process.env.NODE_ENV === 'development') {
     mongoose.set('debug', true);
@@ -36,6 +40,18 @@ async function bootstrap() {
   });
 
   app.use(middlewares);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      disableErrorMessages: true,
+      exceptionFactory(errors) {
+        console.log(errors);
+
+        throw new ParametersInvalidException(errors);
+      },
+    }),
+  );
+
   await app.listen(process.env.PORT);
   logger.log(`Application is running on ${await app.getUrl()}`);
 }

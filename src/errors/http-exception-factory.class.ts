@@ -1,9 +1,10 @@
 import { HttpException } from '@nestjs/common';
-import { TranslateOptions } from 'nestjs-i18n';
+import { I18nContext, TranslateOptions } from 'nestjs-i18n';
 
 export interface ErrorInterface {
   code: string;
   exceptionFilter?: TranslateOptions;
+  additionalDataHandler?: (arg0: I18nContext) => any;
 }
 
 export class HttpExceptionFactory extends HttpException {

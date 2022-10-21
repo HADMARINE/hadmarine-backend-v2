@@ -24,7 +24,7 @@ export class HttpExceptionFactoryFilter implements ExceptionFilter {
       HttpStatus[status as unknown as keyof typeof HttpStatus] ||
       'INTERNAL_SERVER_ERROR';
 
-    response.status(status).json({
+    const responseData = {
       status,
       timestamp: new Date().toISOString(),
       path: request.url,
@@ -33,6 +33,14 @@ export class HttpExceptionFactoryFilter implements ExceptionFilter {
         `exceptions.messages.${code}`,
         exception.errorDetails?.exceptionFilter || undefined,
       ),
-    });
+    };
+
+    if (exception?.errorDetails?.additionalDataHandler) {
+      Object.assign(responseData, {
+        data: exception.errorDetails.additionalDataHandler(i18n),
+      });
+    }
+
+    response.status(status).json(responseData);
   }
 }

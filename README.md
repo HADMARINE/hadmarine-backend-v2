@@ -16,10 +16,10 @@
   }
   ```
 - [x] Error code handler
-- [ ] env var verifier
-- [ ] Dto class verifier : https://docs.nestjs.com/techniques/validation
+- [x] env var verifier
+- [x] Dto class verifier : https://docs.nestjs.com/techniques/validation
 - [x] Health Checks : https://docs.nestjs.com/recipes/terminus
-- [ ] CronJob : https://docs.nestjs.com/techniques/task-scheduling
+- [x] CronJob : https://docs.nestjs.com/techniques/task-scheduling
 
 
 # REF
