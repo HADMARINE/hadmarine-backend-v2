@@ -20,6 +20,7 @@
 - [x] Dto class verifier : https://docs.nestjs.com/techniques/validation
 - [x] Health Checks : https://docs.nestjs.com/recipes/terminus
 - [x] CronJob : https://docs.nestjs.com/techniques/task-scheduling
+- [ ] Swagger
 
 
 # REF
