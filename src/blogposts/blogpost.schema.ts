@@ -12,7 +12,7 @@ export class Blogpost {
   subtitle?: string;
 
   @Prop({ type: [String], default: [] })
-  tag: string[];
+  tags: string[];
 
   @Prop({ type: String, required: true })
   content: string;

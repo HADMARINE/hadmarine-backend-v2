@@ -17,6 +17,8 @@ import { HealthModule } from './health/health.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { RolesGuard } from './guards/roles.guard';
+import { UtilsService } from './utils/utils.service';
+import { UtilsModule } from './utils/utils.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -77,6 +79,7 @@ import * as Joi from 'joi';
     PortfoliosModule,
     HealthModule,
     TasksModule,
+    UtilsModule,
   ],
   controllers: [AppController],
   providers: [
@@ -85,6 +88,7 @@ import * as Joi from 'joi';
     { provide: APP_FILTER, useClass: NotFoundExceptionFilter }, // The order must be like this..
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    UtilsService,
   ],
 })
 export class AppModule implements NestModule {

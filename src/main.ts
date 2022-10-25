@@ -19,9 +19,6 @@ async function bootstrap() {
     express.json(),
     express.urlencoded({ extended: true }),
   ];
-  mongoose.set('debug', true);
-
-  console.log(process.env.NODE_ENV);
 
   if (process.env.NODE_ENV === 'development') {
     mongoose.set('debug', true);
@@ -45,8 +42,6 @@ async function bootstrap() {
     new ValidationPipe({
       disableErrorMessages: true,
       exceptionFactory(errors) {
-        console.log(errors);
-
         throw new ParametersInvalidException(errors);
       },
     }),
