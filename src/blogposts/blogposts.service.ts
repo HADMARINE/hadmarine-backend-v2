@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { FilterQuery, Model } from 'mongoose';
 import { DatabaseExecutionException } from 'src/errors/exceptions/database-execution.exception';
 import { DatabaseValidationException } from 'src/errors/exceptions/database-validation.exception';
 import { Blogpost, BlogpostDocument } from './blogpost.schema';
@@ -10,11 +10,14 @@ import {
   FindAllBlogpostDto,
   findAllBlogpostDtoDefaultValue,
 } from './dto/find-all-blogpost.dto';
+import { UtilsService } from 'src/utils/utils.service';
+import { DataNotFoundException } from 'src/errors/exceptions/data-not-found.exception';
 
 @Injectable()
 export class BlogpostsService {
   constructor(
     @InjectModel(Blogpost.name) private blogpostModel: Model<BlogpostDocument>,
+    private utilsService: UtilsService,
   ) {}
 
   async create(createBlogpostDto: CreateBlogpostDto): Promise<void> {
@@ -39,14 +42,32 @@ export class BlogpostsService {
   async findAll(
     findAllBlogpostDto: FindAllBlogpostDto = findAllBlogpostDtoDefaultValue,
   ) {
+    let blogs: BlogpostDocument[] | [];
     try {
-      const query: FilterQuery<BlogpostDocument> = {};
-
-      await this.blogpostModel
-        .find(query)
+      blogs = await this.blogpostModel
+        .find(
+          this.utilsService.queryNullableFilter({
+            title: findAllBlogpostDto.title,
+            subtitle: findAllBlogpostDto.subtitle,
+            tags: { $all: findAllBlogpostDto.tags },
+            date: {
+              $lte: findAllBlogpostDto.date.to,
+              $gte: findAllBlogpostDto.date.from,
+            },
+          }),
+        )
         .skip(findAllBlogpostDto.offset || 0)
         .limit(findAllBlogpostDto.limit || 10);
-    } catch (e) {}
+    } catch (e) {
+      throw new DatabaseExecutionException({
+        action: 'find',
+        database: 'blogpost',
+      });
+    }
+    if (blogs.length === 0) {
+      throw new DataNotFoundException({ name: 'blogpost' });
+    }
+    return blogs;
   }
 
   async findOne(id: number) {

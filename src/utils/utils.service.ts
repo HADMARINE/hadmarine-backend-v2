@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UtilsService {
-  queryNullableFilter<T extends string | number | symbol, U>(
-    query: Record<T, U>,
-  ): Record<T, NonNullable<U>> {
+  queryNullableFilter<T>(query: T): Record<keyof T, NonNullable<T[keyof T]>> {
     const _isJsonObject = (d: any): d is Record<string, any> => {
       if (typeof d !== 'string') {
         try {
