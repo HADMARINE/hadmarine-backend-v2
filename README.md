@@ -21,6 +21,8 @@
 - [x] Health Checks : https://docs.nestjs.com/recipes/terminus
 - [x] CronJob : https://docs.nestjs.com/techniques/task-scheduling
 - [ ] Swagger
+- [ ] Session controller
+- [ ] Testing
 
 
 # REF

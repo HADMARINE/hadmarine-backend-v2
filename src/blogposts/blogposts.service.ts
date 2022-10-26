@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { FilterQuery, Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { DatabaseExecutionException } from 'src/errors/exceptions/database-execution.exception';
 import { DatabaseValidationException } from 'src/errors/exceptions/database-validation.exception';
 import { Blogpost, BlogpostDocument } from './blogpost.schema';
@@ -60,7 +60,7 @@ export class BlogpostsService {
         .limit(findAllBlogpostDto.limit || 10);
     } catch (e) {
       throw new DatabaseExecutionException({
-        action: 'find',
+        action: 'findAll',
         database: 'blogpost',
       });
     }
@@ -70,15 +70,48 @@ export class BlogpostsService {
     return blogs;
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} blogpost`;
+  async findOne(id: string): Promise<BlogpostDocument> {
+    try {
+      const blogpost = await this.blogpostModel.findById(id);
+      if (!blogpost) {
+        throw new DataNotFoundException({ name: 'blogpost' });
+      }
+      return blogpost;
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'findOne',
+        database: 'blogpost',
+      });
+    }
   }
 
-  async update(id: number, updateBlogpostDto: UpdateBlogpostDto) {
-    return `This action updates a #${id} blogpost`;
+  async update(
+    id: string,
+    updateBlogpostDto: UpdateBlogpostDto,
+  ): Promise<void> {
+    try {
+      const blogpost = await this.blogpostModel.findByIdAndUpdate(
+        id,
+        updateBlogpostDto,
+      );
+      if (!blogpost) throw new DataNotFoundException({ name: 'blogpost' });
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'update',
+        database: 'blogpost',
+      });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blogpost`;
+  async remove(id: string): Promise<void> {
+    try {
+      const blogpost = await this.blogpostModel.findByIdAndDelete(id);
+      if (!blogpost) throw new DataNotFoundException({ name: 'blogpost' });
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'remove',
+        database: 'blogpost',
+      });
+    }
   }
 }

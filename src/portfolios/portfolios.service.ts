@@ -1,36 +1,121 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Roles } from 'src/decorators/roles.decorator';
-import { AuthorityEnum } from 'src/users/authority.enum';
+import mongoose, { Model } from 'mongoose';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
-import { Portfolio } from './portfolio.schema';
+import { Portfolio, PortfolioDocument } from './portfolio.schema';
+import {
+  FindAllPortfolioDto,
+  findAllPortfolioDtoDefaultValue,
+} from './dto/find-all-portfolio.dto';
+import { UtilsService } from 'src/utils/utils.service';
+import { DatabaseValidationException } from 'src/errors/exceptions/database-validation.exception';
+import { DatabaseExecutionException } from 'src/errors/exceptions/database-execution.exception';
+import { DataNotFoundException } from 'src/errors/exceptions/data-not-found.exception';
 
 @Injectable()
 export class PortfoliosService {
   constructor(
     @InjectModel(Portfolio.name) private portfolioModel: Model<Portfolio>,
+    private utilsService: UtilsService,
   ) {}
 
-  // @Roles(AuthorityEnum.ADMIN)
-  async create(createPortfolioDto: CreatePortfolioDto): Promise<undefined> {
-    return;
+  async create(createPortfolioDto: CreatePortfolioDto): Promise<void> {
+    const portfolio = new this.portfolioModel(createPortfolioDto);
+
+    try {
+      await portfolio.save();
+    } catch (e) {
+      if (e instanceof mongoose.Error.ValidationError) {
+        const paths = Object.keys(e.errors);
+        throw new DatabaseValidationException({
+          path: paths.toString(),
+          database: 'portfolio',
+        });
+      }
+      throw new DatabaseExecutionException({
+        action: 'create',
+        database: 'portfolio',
+      });
+    }
   }
 
-  findAll() {
-    return `This action returns all portfolios`;
+  async findAll(
+    findAllPortfolioDto: FindAllPortfolioDto = findAllPortfolioDtoDefaultValue,
+  ): Promise<PortfolioDocument[]> {
+    let portfolios: PortfolioDocument[] | [];
+    try {
+      portfolios = await this.portfolioModel
+        .find(
+          this.utilsService.queryNullableFilter({
+            title: findAllPortfolioDto.title,
+            subtitle: findAllPortfolioDto.subtitle,
+            date: {
+              $lte: findAllPortfolioDto.date.to,
+              $gte: findAllPortfolioDto.date.from,
+            },
+          }),
+        )
+        .skip(findAllPortfolioDto.offset)
+        .limit(findAllPortfolioDto.limit);
+    } catch (e) {
+      throw new DatabaseExecutionException({
+        action: 'findAll',
+        database: 'portfolio',
+      });
+    }
+    if (portfolios.length === 0) {
+      throw new DataNotFoundException({ name: 'portfolio' });
+    }
+    return portfolios;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} portfolio`;
+  async findOne(id: string): Promise<PortfolioDocument> {
+    try {
+      const portfolio = await this.portfolioModel.findById(id);
+      if (!portfolio) {
+        throw new DataNotFoundException({ name: 'portfolio' });
+      }
+      return portfolio;
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'findOne',
+        database: 'portfolio',
+      });
+    }
   }
 
-  update(id: number, updatePortfolioDto: UpdatePortfolioDto) {
-    return `This action updates a #${id} portfolio`;
+  async update(
+    id: string,
+    updatePortfolioDto: UpdatePortfolioDto,
+  ): Promise<void> {
+    try {
+      const portfolio = await this.portfolioModel.findByIdAndUpdate(
+        id,
+        updatePortfolioDto,
+      );
+      if (!portfolio) {
+        throw new DataNotFoundException({ name: 'portfolio' });
+      }
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'update',
+        database: 'portfolio',
+      });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} portfolio`;
+  async remove(id: string): Promise<void> {
+    try {
+      const portfolio = await this.portfolioModel.findByIdAndDelete(id);
+      if (!portfolio) {
+        throw new DataNotFoundException({ name: 'portfolio' });
+      }
+    } catch {
+      throw new DatabaseExecutionException({
+        action: 'remove',
+        database: 'portfolio',
+      });
+    }
   }
 }

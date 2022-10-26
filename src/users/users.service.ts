@@ -16,7 +16,7 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService)) private authService: AuthService,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<undefined> {
+  async create(createUserDto: CreateUserDto): Promise<void> {
     const { password, ...remainings } = createUserDto;
     const createdPassword = this.authService.createPassword(password);
     const createdUser = new this.userModel({
@@ -42,13 +42,13 @@ export class UsersService {
     return;
   }
 
-  async findOne(userid: string): Promise<UserDocument | null> {
+  async findOne(userid: string): Promise<UserDocument> {
     const user = await this.userModel.findOne({ userid }).exec();
     if (!user) throw new DataNotFoundException({ name: 'user' });
     return user;
   }
 
-  async update(userid: string, updateUserDto: UpdateUserDto) {
+  async update(userid: string, updateUserDto: UpdateUserDto): Promise<void> {
     const { password, ...rest } = updateUserDto;
     let passwordEncrypted = {};
 
@@ -73,7 +73,7 @@ export class UsersService {
     }
   }
 
-  async remove(userid: string) {
+  async remove(userid: string): Promise<void> {
     const user = await this.userModel.findOneAndDelete({ userid }).exec();
     if (!user) throw new DataNotFoundException({ name: 'user' });
   }
