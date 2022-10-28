@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import express from 'express';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ParametersInvalidException } from './errors/exceptions/parameters-invalid.exception';
 
 async function bootstrap() {
@@ -20,13 +20,13 @@ async function bootstrap() {
     express.urlencoded({ extended: true }),
   ];
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     mongoose.set('debug', true);
-    middlewares.push([
-      '/dev/info/coverage',
-      express.static('reports/coverage/lcov-report'),
-    ]);
-    middlewares.push(['/dev/info/test', express.static('reports/test')]);
+    // middlewares.push([
+    //   '/dev/info/coverage',
+    //   express.static('reports/coverage/lcov-report'),
+    // ]);
+    // middlewares.push(['/dev/info/test', express.static('reports/test')]);
   }
 
   app.enableCors({
@@ -36,11 +36,16 @@ async function bootstrap() {
         : process.env.REQUEST_URI || '*',
   });
 
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
   app.use(middlewares);
 
   app.useGlobalPipes(
     new ValidationPipe({
       disableErrorMessages: true,
+      transform: true,
       exceptionFactory(errors) {
         throw new ParametersInvalidException(errors);
       },
