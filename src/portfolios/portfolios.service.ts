@@ -41,7 +41,7 @@ export class PortfoliosService {
   }
 
   async findAll(
-    findAllPortfolioDto: FindAllPortfolioDto = findAllPortfolioDtoDefaultValue,
+    findAllPortfolioDto: FindAllPortfolioDto,
   ): Promise<PortfolioDocument[]> {
     let portfolios: PortfolioDocument[] | [];
     try {
@@ -51,13 +51,17 @@ export class PortfoliosService {
             title: findAllPortfolioDto.title,
             subtitle: findAllPortfolioDto.subtitle,
             date: {
-              $lte: findAllPortfolioDto.date.to,
-              $gte: findAllPortfolioDto.date.from,
+              $lte: findAllPortfolioDto.date?.to,
+              $gte: findAllPortfolioDto.date?.from,
             },
           }),
         )
-        .skip(findAllPortfolioDto.offset)
-        .limit(findAllPortfolioDto.limit);
+        .skip(
+          findAllPortfolioDto.offset || findAllPortfolioDtoDefaultValue.offset,
+        )
+        .limit(
+          findAllPortfolioDto.limit || findAllPortfolioDtoDefaultValue.limit,
+        );
     } catch (e) {
       throw new DatabaseExecutionException({
         action: 'findAll',

@@ -39,9 +39,7 @@ export class BlogpostsService {
     }
   }
 
-  async findAll(
-    findAllBlogpostDto: FindAllBlogpostDto = findAllBlogpostDtoDefaultValue,
-  ) {
+  async findAll(findAllBlogpostDto: FindAllBlogpostDto) {
     let blogs: BlogpostDocument[] | [];
     try {
       blogs = await this.blogpostModel
@@ -51,13 +49,17 @@ export class BlogpostsService {
             subtitle: findAllBlogpostDto.subtitle,
             tags: { $all: findAllBlogpostDto.tags },
             date: {
-              $lte: findAllBlogpostDto.date.to,
-              $gte: findAllBlogpostDto.date.from,
+              $lte: findAllBlogpostDto.date?.to,
+              $gte: findAllBlogpostDto.date?.from,
             },
           }),
         )
-        .skip(findAllBlogpostDto.offset || 0)
-        .limit(findAllBlogpostDto.limit || 10);
+        .skip(
+          findAllBlogpostDto.offset || findAllBlogpostDtoDefaultValue.offset,
+        )
+        .limit(
+          findAllBlogpostDto.limit || findAllBlogpostDtoDefaultValue.limit,
+        );
     } catch (e) {
       throw new DatabaseExecutionException({
         action: 'findAll',
