@@ -23,6 +23,8 @@
 - [ ] Swagger
 - [ ] Session controller
 - [ ] Testing
+- [ ] Refresh Token invalid/expired -> cookie auto removal
+- [ ] Access Token expired -> refresh token auto renewal
 
 
 # REF
