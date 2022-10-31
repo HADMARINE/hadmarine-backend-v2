@@ -25,6 +25,8 @@
 - [ ] Testing
 - [ ] Refresh Token invalid/expired -> cookie auto removal
 - [ ] Access Token expired -> refresh token auto renewal
+- [ ] JWT forbidden error change
+- [ ] JWT Verify user level endpoint
 
 
 # REF
