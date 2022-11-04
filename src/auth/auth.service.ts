@@ -11,6 +11,7 @@ import { JwtTokenInvalidException } from 'src/errors/exceptions/jwt-token-invali
 import { JwtTokenExpiredException } from 'src/errors/exceptions/jwt-token-expired.exception';
 import { AuthorizationFailedException } from 'src/errors/exceptions/authorization-failed.exception';
 import { TokenTypeEnum } from './enum/token-type.enum';
+import { CookieOptions, Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -60,12 +61,12 @@ export class AuthService {
 
     if (type === TokenTypeEnum.REFRESH) {
       const jwtDecoded: any = jwt.decode(result);
-      if (!jwtDecoded.exp || !jwtDecoded.jti || !jwtDecoded.userid) {
+      if (!jwtDecoded.exp || !jwtDecoded.jti || !jwtDecoded.user) {
         throw new JwtTokenInvalidException();
       }
       await this.sessionService.create({
         expire: jwtDecoded.exp,
-        user: jwtDecoded.userid,
+        user: jwtDecoded.user,
         jwtid: jwtDecoded.jti,
       });
     }
@@ -78,7 +79,7 @@ export class AuthService {
     type: TokenTypeEnum.ACCESS | TokenTypeEnum.REFRESH,
   ): Promise<string> {
     const tokenPayload: TokenPayloadEntity = {
-      userid: user.userid,
+      user: user._id,
       type,
       authority: user.authority,
     };
@@ -175,20 +176,29 @@ export class AuthService {
     return user;
   }
 
-  async getCookieAuthenticationTokenGenerationIntegrated(
+  async getCookieConfigTokenGenerationIntegrated(
     user: UserDocument,
     type: TokenTypeEnum.ACCESS | TokenTypeEnum.REFRESH,
-  ): Promise<string> {
+  ): Promise<[string, string | any, CookieOptions?]> {
     const token = await this.createAuthToken(user, type);
-    return `${
-      type === TokenTypeEnum.ACCESS ? `Authentication` : `RefreshToken`
-    }=${token}; HttpOnly; Path=/' Max-Age=${ms(
-      this.configService.getOrThrow(
-        type === TokenTypeEnum.ACCESS
-          ? 'ACCESS_TOKEN_EXPIRATION_TIME'
-          : 'REFRESH_TOKEN_EXPIRATION_TIME',
-      ),
-    )};`;
+
+    return [
+      type === TokenTypeEnum.ACCESS ? `Authentication` : `RefreshToken`,
+      token,
+      {
+        httpOnly: true,
+        path: '/',
+        maxAge: parseInt(
+          ms(
+            this.configService.getOrThrow(
+              type === TokenTypeEnum.ACCESS
+                ? 'ACCESS_TOKEN_EXPIRATION_TIME'
+                : 'REFRESH_TOKEN_EXPIRATION_TIME',
+            ),
+          ),
+        ),
+      },
+    ];
   }
 
   getCookieLogout(): string[] {

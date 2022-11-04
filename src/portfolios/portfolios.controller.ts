@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  UseGuards,
   Query,
 } from '@nestjs/common';
 import { PortfoliosService } from './portfolios.service';
@@ -14,16 +13,14 @@ import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorityEnum } from 'src/users/authority.enum';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { FindAllPortfolioDto } from './dto/find-all-portfolio.dto';
 
 @Controller('portfolios')
 export class PortfoliosController {
   constructor(private readonly portfoliosService: PortfoliosService) {}
 
-  @Roles(AuthorityEnum.ADMIN)
-  @UseGuards(JwtAuthGuard)
   @Post()
+  @Roles(AuthorityEnum.ADMIN)
   create(@Body() createPortfolioDto: CreatePortfolioDto) {
     return this.portfoliosService.create(createPortfolioDto);
   }
@@ -38,9 +35,8 @@ export class PortfoliosController {
     return this.portfoliosService.findOne(id);
   }
 
-  @Roles(AuthorityEnum.ADMIN)
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Roles(AuthorityEnum.ADMIN)
   update(
     @Param('id') id: string,
     @Body() updatePortfolioDto: UpdatePortfolioDto,
@@ -48,9 +44,8 @@ export class PortfoliosController {
     return this.portfoliosService.update(id, updatePortfolioDto);
   }
 
-  @Roles(AuthorityEnum.ADMIN)
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Roles(AuthorityEnum.ADMIN)
   remove(@Param('id') id: string) {
     return this.portfoliosService.remove(id);
   }

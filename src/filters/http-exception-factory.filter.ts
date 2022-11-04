@@ -24,15 +24,23 @@ export class HttpExceptionFactoryFilter implements ExceptionFilter {
       HttpStatus[status as unknown as keyof typeof HttpStatus] ||
       'INTERNAL_SERVER_ERROR';
 
+    const message = await (async () => {
+      try {
+        return await i18n.t(
+          `exceptions.messages.${code}`,
+          exception.errorDetails?.exceptionFilter || undefined,
+        );
+      } catch {
+        return 'undefined';
+      }
+    })();
+
     const responseData = {
       status,
       timestamp: new Date().toISOString(),
       path: request.url,
       code,
-      message: await i18n.t(
-        `exceptions.messages.${code}`,
-        exception.errorDetails?.exceptionFilter || undefined,
-      ),
+      message,
     };
 
     if (exception?.errorDetails?.additionalDataHandler) {

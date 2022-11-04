@@ -53,6 +53,10 @@ async function bootstrap() {
   );
 
   await app.listen(process.env.PORT);
-  logger.log(`Application is running on ${await app.getUrl()}`);
+  logger.log(
+    `Application is running on ${await app.getUrl()} , NODE_ENV=${
+      process.env.NODE_ENV
+    }`,
+  );
 }
 bootstrap();

@@ -19,6 +19,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { RolesGuard } from './guards/roles.guard';
 import { UtilsModule } from './utils/utils.module';
 import * as Joi from 'joi';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -84,7 +85,8 @@ import * as Joi from 'joi';
   providers: [
     AppService,
     { provide: APP_FILTER, useClass: HttpExceptionFactoryFilter },
-    { provide: APP_FILTER, useClass: NotFoundExceptionFilter }, // The order must be like this..
+    { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],

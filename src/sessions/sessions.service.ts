@@ -94,6 +94,7 @@ export class SessionsService {
   }
 
   async create(createSessonDto: CreateSessionDto) {
+    console.log(createSessonDto);
     const session = new this.sessionModel({ ...createSessonDto });
     try {
       await session.save();
@@ -102,6 +103,7 @@ export class SessionsService {
         const paths = Object.keys(e.errors);
         throw new DatabaseValidationException({
           database: 'session',
+          action: 'create',
           path: paths.toString(),
         });
       } else {
