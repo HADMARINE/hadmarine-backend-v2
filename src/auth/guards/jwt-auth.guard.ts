@@ -1,8 +1,10 @@
 import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { TokenExpiredError } from 'jsonwebtoken';
 import { Observable } from 'rxjs';
 import { AuthorizationFailedException } from 'src/errors/exceptions/authorization-failed.exception';
+import { JwtTokenExpiredException } from 'src/errors/exceptions/jwt-token-expired.exception';
 import { AuthorityEnum } from 'src/users/authority.enum';
 
 @Injectable()
@@ -44,10 +46,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     context: ExecutionContext,
     status?: any,
   ): TUser {
+    if (info instanceof TokenExpiredError) {
+      throw new JwtTokenExpiredException();
+    }
+
     if (err || !user) {
-      this.logger.debug(err || (!user && 'User is null') || 'Unknown Error');
+      this.logger.debug(info);
       throw new AuthorizationFailedException();
     }
+
     return user;
   }
 }
