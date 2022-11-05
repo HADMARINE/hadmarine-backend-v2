@@ -17,6 +17,8 @@ import { TokenTypeEnum } from './enum/token-type.enum';
 import { Roles } from 'src/decorators/roles.decorator';
 import { JwtForceVerify } from 'src/decorators/jwt-force-verify.decorator';
 import { AuthorityEnum } from 'src/users/authority.enum';
+import { ApiBody } from '@nestjs/swagger';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +30,7 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @Throttle(5, 300)
+  @ApiBody({ type: LoginDto })
   @Post('login')
   async login(@Req() request: RequestWithUser) {
     const { user } = request;
@@ -73,20 +76,18 @@ export class AuthController {
   }
 
   @Get('verify/token')
-  @JwtForceVerify()
+  @Roles()
   verifyToken(): string {
     return 'OK';
   }
 
   @Get('verify/normal')
-  // @UseGuards(JwtAuthGuard)
   @Roles(AuthorityEnum.NORMAL)
   verifyNormalAuthority(): string {
     return 'OK';
   }
 
   @Get('verify/admin')
-  // @UseGuards(JwtAuthGuard)
   @Roles(AuthorityEnum.ADMIN)
   verifyAdminAuthority(): string {
     return 'OK';

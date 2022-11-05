@@ -11,7 +11,7 @@ import { JwtTokenInvalidException } from 'src/errors/exceptions/jwt-token-invali
 import { JwtTokenExpiredException } from 'src/errors/exceptions/jwt-token-expired.exception';
 import { AuthorizationFailedException } from 'src/errors/exceptions/authorization-failed.exception';
 import { TokenTypeEnum } from './enum/token-type.enum';
-import { CookieOptions, Response } from 'express';
+import { CookieOptions } from 'express';
 
 @Injectable()
 export class AuthService {

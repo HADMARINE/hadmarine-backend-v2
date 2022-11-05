@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 import { DateRangeDto } from 'src/dtos/date-range.dto';
@@ -12,6 +13,7 @@ export class FindAllPortfolioDto extends PaginationQueryDto {
   @IsString()
   subtitle?: string;
 
+  @ApiProperty()
   @IsOptional()
   @Type(() => DateRangeDto)
   date?: DateRangeDto;

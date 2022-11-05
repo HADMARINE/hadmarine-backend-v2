@@ -86,8 +86,6 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     AppService,
     { provide: APP_FILTER, useClass: HttpExceptionFactoryFilter },
     { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })

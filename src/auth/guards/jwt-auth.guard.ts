@@ -5,7 +5,6 @@ import { TokenExpiredError } from 'jsonwebtoken';
 import { Observable } from 'rxjs';
 import { AuthorizationFailedException } from 'src/errors/exceptions/authorization-failed.exception';
 import { JwtTokenExpiredException } from 'src/errors/exceptions/jwt-token-expired.exception';
-import { AuthorityEnum } from 'src/users/authority.enum';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -18,23 +17,26 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const roles = this.reflector.get<AuthorityEnum[]>(
-      'roles',
-      context.getHandler(),
-    );
+    // const roles = this.reflector.get<AuthorityEnum[]>(
+    //   'roles',
+    //   context.getHandler(),
+    // );
 
-    const jwtForceVerify = this.reflector.get<boolean>(
-      'jwtForceVerify',
-      context.getHandler(),
-    );
+    // const jwtForceVerify = this.reflector.get<boolean>(
+    //   'jwtForceVerify',
+    //   context.getHandler(),
+    // );
+    // console.log(1);
 
-    if (!roles) {
-      return true;
-    }
+    // if (jwtForceVerify) {
+    //   return true;
+    // }
+    // console.log(1);
 
-    if (jwtForceVerify) {
-      return false;
-    }
+    // if (!roles) {
+    //   return true;
+    // }
+    // console.log(1);
 
     return super.canActivate(context);
   }

@@ -1,5 +1,6 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthorizationFailedException } from 'src/errors/exceptions/authorization-failed.exception';
 import { ParametersInvalidException } from 'src/errors/exceptions/parameters-invalid.exception';
 
 @Injectable()
@@ -11,8 +12,13 @@ export class LocalAuthGuard extends AuthGuard('local') {
     context: ExecutionContext,
     status?: any,
   ): TUser {
+    console.log(err, info);
     if (info?.message === 'Missing credentials') {
       throw new ParametersInvalidException();
+    }
+
+    if (err) {
+      throw new AuthorizationFailedException();
     }
     return super.handleRequest(err, user, info, context, status);
   }

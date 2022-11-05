@@ -94,7 +94,6 @@ export class SessionsService {
   }
 
   async create(createSessonDto: CreateSessionDto) {
-    console.log(createSessonDto);
     const session = new this.sessionModel({ ...createSessonDto });
     try {
       await session.save();
