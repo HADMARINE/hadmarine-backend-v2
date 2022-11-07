@@ -102,6 +102,7 @@ export class SessionsService {
         const paths = Object.keys(e.errors);
         throw new DatabaseValidationException({
           database: 'session',
+          action: 'create',
           path: paths.toString(),
         });
       } else {

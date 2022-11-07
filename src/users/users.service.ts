@@ -48,6 +48,12 @@ export class UsersService {
     return user;
   }
 
+  async findById(userid: mongoose.Types.ObjectId): Promise<UserDocument> {
+    const user = await this.userModel.findById(userid).exec();
+    if (!user) throw new DataNotFoundException({ name: 'user' });
+    return user;
+  }
+
   async update(userid: string, updateUserDto: UpdateUserDto): Promise<void> {
     const { password, ...rest } = updateUserDto;
     let passwordEncrypted = {};

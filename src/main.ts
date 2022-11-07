@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import express from 'express';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ParametersInvalidException } from './errors/exceptions/parameters-invalid.exception';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import packageInfo from '../package.json';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -52,7 +54,42 @@ async function bootstrap() {
     }),
   );
 
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle(packageInfo.name)
+    .setDescription('Nest.JS applied new version')
+    .setVersion(packageInfo.version)
+    .addCookieAuth(
+      'Authentication',
+      {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'Authentication',
+      },
+      'Authentication',
+    )
+    .addCookieAuth(
+      'RefreshToken',
+      {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'RefreshToken',
+      },
+      'RefreshToken',
+    )
+    // .addTag('')
+    .build();
+
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig, {
+    deepScanRoutes: true,
+  });
+  SwaggerModule.setup('dev/api', app, swaggerDocument);
+
   await app.listen(process.env.PORT);
-  logger.log(`Application is running on ${await app.getUrl()}`);
+
+  logger.log(
+    `Application is running on ${await app.getUrl()} , NODE_ENV=${
+      process.env.NODE_ENV
+    }`,
+  );
 }
 bootstrap();

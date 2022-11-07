@@ -7,9 +7,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthorityEnum } from 'src/users/authority.enum';
 import { BlogpostsService } from './blogposts.service';
@@ -22,7 +20,6 @@ export class BlogpostsController {
   constructor(private readonly blogpostsService: BlogpostsService) {}
 
   @Roles(AuthorityEnum.ADMIN)
-  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createBlogpostDto: CreateBlogpostDto) {
     return this.blogpostsService.create(createBlogpostDto);
@@ -39,7 +36,6 @@ export class BlogpostsController {
   }
 
   @Roles(AuthorityEnum.ADMIN)
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -49,7 +45,6 @@ export class BlogpostsController {
   }
 
   @Roles(AuthorityEnum.ADMIN)
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.blogpostsService.remove(id);

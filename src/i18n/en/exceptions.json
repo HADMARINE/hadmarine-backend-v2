@@ -6,11 +6,12 @@
         "AUTHORIZATION_INVALID": "Authorization invalid",
         "AUTHORIZATION_FAILED": "Authorization failed",
         "DATABASE_EXECUTION": "Failed to execute {action} to the {database} database",
-        "DATABASE_VALIDATION": "Failed to validate datas ({path}) on the {database} database",
-        "DATA_NOT_FOUND": "{name} data is not found",
+        "DATABASE_VALIDATION": "Failed to validate datas ({path}) on the {database} database on executing {action}",
+        "DATA_NOT_FOUND": "{name} data not found",
         "TOO_MANY_REQUESTS": "Too many requests. Try again later",
         "INTERNAL_SERVER_ERROR": "Unknown internal server error occured",
-        "PARAMETERS_INVALID": "Parameters were invalidly provided"
+        "PARAMETERS_INVALID": "Parameters were invalidly provided",
+        "BAD_REQUEST": "Bad request. Check the parameters of request"
     },
     "parameter_details": {
         "data_null": "is not provided.",

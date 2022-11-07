@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7.0.5
+    container_name: redis_dev_server
+    ports:
+      - 6379:6379
+  mongodb:
+    image: mongo:6.0.2-focal
+    container_name: mongodb_dev_server
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'root'
+      MONGO_INITDB_ROOT_PASSWORD: 'password'

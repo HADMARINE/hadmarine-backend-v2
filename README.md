@@ -1,6 +1,6 @@
 # TODO 
 
-- [ ] Make cron service and add this function
+- [x] Make cron service and add this function
   ```typescript
   async function removeExpiredToken(): Promise<number> {
     try {
@@ -21,10 +21,13 @@
 - [x] Health Checks : https://docs.nestjs.com/recipes/terminus
 - [x] CronJob : https://docs.nestjs.com/techniques/task-scheduling
 - [ ] Swagger
-- [ ] Session controller
+- [ ] Session controller -> Token deletion on admin page
 - [ ] Testing
 - [ ] Refresh Token invalid/expired -> cookie auto removal
 - [ ] Access Token expired -> refresh token auto renewal
+- [x] JWT forbidden error change
+- [x] JWT Verify user level endpoint
+- [x] Docker dev envrionment integration
 
 
 # REF

@@ -9,6 +9,7 @@ import { TokenPayloadEntity } from '../entities/token-payload.entity';
 import jwt from 'jsonwebtoken';
 import { SessionsService } from 'src/sessions/sessions.service';
 import { AuthorizationInvalidException } from 'src/errors/exceptions/authorization-invalid.exception';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
@@ -40,7 +41,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
     }
 
     const jwtid = payload.jti as string | undefined;
-    const userid = payload.userid as string | undefined;
+    const userid = payload.user as mongoose.Types.ObjectId | undefined;
 
     if (!jwtid || !userid) {
       throw new JwtTokenInvalidException();
@@ -52,7 +53,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
       throw new JwtTokenInvalidException();
     }
 
-    const user = await this.usersService.findOne(userid);
+    const user = await this.usersService.findById(userid);
 
     return user;
   }
