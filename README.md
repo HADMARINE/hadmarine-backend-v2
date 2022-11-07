@@ -1,6 +1,6 @@
 # TODO 
 
-- [ ] Make cron service and add this function
+- [x] Make cron service and add this function
   ```typescript
   async function removeExpiredToken(): Promise<number> {
     try {
@@ -25,8 +25,9 @@
 - [ ] Testing
 - [ ] Refresh Token invalid/expired -> cookie auto removal
 - [ ] Access Token expired -> refresh token auto renewal
-- [ ] JWT forbidden error change
+- [x] JWT forbidden error change
 - [x] JWT Verify user level endpoint
+- [x] Docker dev envrionment integration
 
 
 # REF
