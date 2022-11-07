@@ -1,8 +1,8 @@
-import { name as _name } from './package.json';
+const packageData = require('./package.json');
 
 export const apps = [
   {
-    name: _name,
+    name: packageData.name,
     exec_mode: 'cluster',
     instances: 'max',
     script: './dist/index.js',
