@@ -1,6 +1,6 @@
 const packageData = require('./package.json');
 
-export const apps = [
+const apps = [
   {
     name: packageData.name,
     exec_mode: 'cluster',
@@ -12,3 +12,7 @@ export const apps = [
     },
   },
 ];
+
+module.exports = {
+  apps,
+};
