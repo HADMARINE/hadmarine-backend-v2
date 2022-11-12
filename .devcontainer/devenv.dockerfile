@@ -7,5 +7,9 @@ RUN git config --global core.autocrlf input
 RUN source ~/.profile && npm i -g @nestjs/cli
 
 RUN sudo usermod -aG docker ${USERNAME}
+RUN newgrp docker
+# RUN sudo chgrp docker /lib/systemd/system/docker.socket
+# RUN sudo chmod g+w /lib/systemd/system/docker.socket
+
 
 CMD [ "zsh" ]

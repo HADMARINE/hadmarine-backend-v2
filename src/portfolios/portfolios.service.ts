@@ -20,11 +20,14 @@ export class PortfoliosService {
     private utilsService: UtilsService,
   ) {}
 
-  async create(createPortfolioDto: CreatePortfolioDto): Promise<void> {
+  async create(
+    createPortfolioDto: CreatePortfolioDto,
+  ): Promise<PortfolioDocument> {
     const portfolio = new this.portfolioModel(createPortfolioDto);
 
     try {
       await portfolio.save();
+      return portfolio;
     } catch (e) {
       if (e instanceof mongoose.Error.ValidationError) {
         const paths = Object.keys(e.errors);
@@ -42,25 +45,28 @@ export class PortfoliosService {
 
   async findAll(
     findAllPortfolioDto: FindAllPortfolioDto,
-  ): Promise<PortfolioDocument[]> {
+  ): Promise<{ data: PortfolioDocument[]; total: number }> {
     let portfolios: PortfolioDocument[] | [];
+
+    const query = this.utilsService.queryNullableFilter({
+      title: findAllPortfolioDto?.query?.title,
+      subtitle: findAllPortfolioDto?.query?.subtitle,
+      date: {
+        $lte: findAllPortfolioDto?.query?.date?.to,
+        $gte: findAllPortfolioDto?.query?.date?.from,
+      },
+    });
+
     try {
       portfolios = await this.portfolioModel
-        .find(
-          this.utilsService.queryNullableFilter({
-            title: findAllPortfolioDto.title,
-            subtitle: findAllPortfolioDto.subtitle,
-            date: {
-              $lte: findAllPortfolioDto.date?.to,
-              $gte: findAllPortfolioDto.date?.from,
-            },
-          }),
-        )
+        .find(query)
         .skip(
-          findAllPortfolioDto.offset || findAllPortfolioDtoDefaultValue.offset,
+          findAllPortfolioDto?.pagination?.offset ||
+            findAllPortfolioDtoDefaultValue?.pagination?.offset,
         )
         .limit(
-          findAllPortfolioDto.limit || findAllPortfolioDtoDefaultValue.limit,
+          findAllPortfolioDto?.pagination?.limit ||
+            findAllPortfolioDtoDefaultValue?.pagination?.limit,
         );
     } catch (e) {
       throw new DatabaseExecutionException({
@@ -71,7 +77,9 @@ export class PortfoliosService {
     if (portfolios.length === 0) {
       throw new DataNotFoundException({ name: 'portfolio' });
     }
-    return portfolios;
+
+    const total = await this.portfolioModel.count(query);
+    return { data: portfolios, total };
   }
 
   async findOne(id: string): Promise<PortfolioDocument> {

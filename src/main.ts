@@ -32,10 +32,8 @@ async function bootstrap() {
   }
 
   app.enableCors({
-    origin:
-      process.env.NODE_ENV === 'development'
-        ? '*'
-        : process.env.REQUEST_URI || '*',
+    origin: process.env.REQUEST_URI || '*',
+    credentials: true,
   });
 
   app.enableVersioning({

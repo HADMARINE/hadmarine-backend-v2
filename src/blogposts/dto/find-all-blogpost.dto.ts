@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { DateRangeDto } from 'src/dtos/date-range.dto';
 import { PaginationQueryDto } from 'src/dtos/pagination-query.dto';
 
-export class FindAllBlogpostDto extends PaginationQueryDto {
+class BlogPostQuery {
   @IsOptional()
   @IsString()
   title?: string;
@@ -21,7 +21,16 @@ export class FindAllBlogpostDto extends PaginationQueryDto {
   date?: DateRangeDto;
 }
 
+export class FindAllBlogpostDto {
+  @IsOptional()
+  @Type(() => BlogPostQuery)
+  query?: BlogPostQuery;
+
+  @IsOptional()
+  @Type(() => PaginationQueryDto)
+  pagination?: PaginationQueryDto;
+}
+
 export const findAllBlogpostDtoDefaultValue: FindAllBlogpostDto = {
-  limit: 10,
-  offset: 0,
+  pagination: { limit: 10, offset: 0 },
 };

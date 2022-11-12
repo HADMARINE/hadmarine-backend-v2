@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
       'roles',
       context.getHandler(),
     );
-    if (!roles) {
+    if (roles.length === 0) {
       return true;
     }
 

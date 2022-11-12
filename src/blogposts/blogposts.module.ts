@@ -4,6 +4,7 @@ import { BlogpostsController } from './blogposts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blogpost, BlogpostSchema } from './blogpost.schema';
 import { UtilsModule } from 'src/utils/utils.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UtilsModule } from 'src/utils/utils.module';
       },
     ]),
     UtilsModule,
+    AuthModule,
   ],
   controllers: [BlogpostsController],
   providers: [BlogpostsService],

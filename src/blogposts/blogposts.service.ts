@@ -45,20 +45,22 @@ export class BlogpostsService {
       blogs = await this.blogpostModel
         .find(
           this.utilsService.queryNullableFilter({
-            title: findAllBlogpostDto.title,
-            subtitle: findAllBlogpostDto.subtitle,
-            tags: { $all: findAllBlogpostDto.tags },
+            title: findAllBlogpostDto.query.title,
+            subtitle: findAllBlogpostDto.query.subtitle,
+            tags: { $all: findAllBlogpostDto.query.tags },
             date: {
-              $lte: findAllBlogpostDto.date?.to,
-              $gte: findAllBlogpostDto.date?.from,
+              $lte: findAllBlogpostDto.query.date?.to,
+              $gte: findAllBlogpostDto.query.date?.from,
             },
           }),
         )
         .skip(
-          findAllBlogpostDto.offset || findAllBlogpostDtoDefaultValue.offset,
+          findAllBlogpostDto.pagination.offset ||
+            findAllBlogpostDtoDefaultValue.pagination.offset,
         )
         .limit(
-          findAllBlogpostDto.limit || findAllBlogpostDtoDefaultValue.limit,
+          findAllBlogpostDto.pagination.limit ||
+            findAllBlogpostDtoDefaultValue.pagination.limit,
         );
     } catch (e) {
       throw new DatabaseExecutionException({
