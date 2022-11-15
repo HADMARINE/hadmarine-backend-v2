@@ -48,6 +48,14 @@ export class PortfoliosService {
   ): Promise<{ data: PortfolioDocument[]; total: number }> {
     let portfolios: PortfolioDocument[] | [];
 
+    const sort =
+      (findAllPortfolioDto.sort?.field &&
+        findAllPortfolioDto.sort?.order && {
+          [findAllPortfolioDto.sort.field]:
+            findAllPortfolioDto.sort.order.toLowerCase() as 'asc' | 'desc',
+        }) ||
+      {};
+
     const query = this.utilsService.queryNullableFilter({
       title: findAllPortfolioDto?.query?.title,
       subtitle: findAllPortfolioDto?.query?.subtitle,
@@ -60,6 +68,7 @@ export class PortfoliosService {
     try {
       portfolios = await this.portfolioModel
         .find(query)
+        .sort(sort)
         .skip(
           findAllPortfolioDto?.pagination?.offset ||
             findAllPortfolioDtoDefaultValue?.pagination?.offset,
@@ -100,15 +109,18 @@ export class PortfoliosService {
   async update(
     id: string,
     updatePortfolioDto: UpdatePortfolioDto,
-  ): Promise<void> {
+  ): Promise<PortfolioDocument> {
     try {
       const portfolio = await this.portfolioModel.findByIdAndUpdate(
         id,
         updatePortfolioDto,
+        { new: true },
       );
       if (!portfolio) {
         throw new DataNotFoundException({ name: 'portfolio' });
       }
+
+      return portfolio;
     } catch {
       throw new DatabaseExecutionException({
         action: 'update',

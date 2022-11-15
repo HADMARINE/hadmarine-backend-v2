@@ -48,9 +48,13 @@ export class BlogpostsService {
             title: findAllBlogpostDto.query.title,
             subtitle: findAllBlogpostDto.query.subtitle,
             tags: { $all: findAllBlogpostDto.query.tags },
-            date: {
-              $lte: findAllBlogpostDto.query.date?.to,
-              $gte: findAllBlogpostDto.query.date?.from,
+            createdDate: {
+              $lte: findAllBlogpostDto.query.createdDate?.to,
+              $gte: findAllBlogpostDto.query.createdDate?.from,
+            },
+            modifiedDate: {
+              $lte: findAllBlogpostDto.query.modifiedDate?.to,
+              $gte: findAllBlogpostDto.query.modifiedDate?.from,
             },
           }),
         )

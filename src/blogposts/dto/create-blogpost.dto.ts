@@ -1,4 +1,4 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsBooleanString, IsOptional, IsString } from 'class-validator';
 
 export class CreateBlogpostDto {
   @IsString()
@@ -10,11 +10,12 @@ export class CreateBlogpostDto {
 
   @IsOptional()
   @IsString({ each: true })
-  tag?: string[];
+  tags?: string[];
 
   @IsString()
   content: string;
 
-  @IsDateString()
-  date: Date;
+  @IsOptional()
+  @IsBooleanString()
+  isPrivate?: boolean;
 }

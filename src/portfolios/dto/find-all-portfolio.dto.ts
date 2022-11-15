@@ -31,7 +31,7 @@ export class FindAllPortfolioDto {
 
   @IsOptional()
   @Type(() => DataSortDto)
-  order?: DataSortDto;
+  sort?: DataSortDto;
 }
 
 export const findAllPortfolioDtoDefaultValue: FindAllPortfolioDto = {
