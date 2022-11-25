@@ -1,4 +1,9 @@
-import { IsBooleanString, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsBooleanString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateBlogpostDto {
   @IsString()
@@ -16,6 +21,6 @@ export class CreateBlogpostDto {
   content: string;
 
   @IsOptional()
-  @IsBooleanString()
+  @IsBoolean()
   isPrivate?: boolean;
 }
