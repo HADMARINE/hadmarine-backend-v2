@@ -30,6 +30,12 @@ export class BlogpostsController {
     return this.blogpostsService.findAll(findAllBlogpostDto);
   }
 
+  @Roles(AuthorityEnum.ADMIN)
+  @Get('/tags')
+  getTags() {
+    return this.blogpostsService.getTags();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.blogpostsService.findOne(id);

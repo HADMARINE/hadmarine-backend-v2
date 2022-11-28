@@ -75,6 +75,18 @@ export class AuthController {
     request.res.clearCookie('RefreshToken');
   }
 
+  @Get('authority/number')
+  @Roles()
+  getAuthorityNumber(@Req() request: RequestWithUser): AuthorityEnum[] {
+    return request.user.authority;
+  }
+
+  @Get('authority/string')
+  @Roles()
+  getAuthorityString(@Req() request: RequestWithUser): string[] {
+    return request.user.authority.map((v) => AuthorityEnum[v as AuthorityEnum]);
+  }
+
   @Get('verify/token')
   @Roles()
   verifyToken(): string {

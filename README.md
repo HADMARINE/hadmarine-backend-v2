@@ -28,6 +28,7 @@
 - [x] JWT forbidden error change
 - [x] JWT Verify user level endpoint
 - [x] Docker dev envrionment integration
+- [ ] Query sorting
 
 
 # REF

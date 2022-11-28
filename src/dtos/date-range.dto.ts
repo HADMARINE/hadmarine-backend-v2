@@ -1,11 +1,11 @@
-import { IsDate, IsOptional } from 'class-validator';
+import { IsDateString, IsOptional } from 'class-validator';
 
 export class DateRangeDto {
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   from?: Date;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   to?: Date;
 }

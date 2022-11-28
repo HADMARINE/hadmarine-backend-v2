@@ -10,12 +10,13 @@
   "settings": {},
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
-    "dbaeumer.vscode-eslint",
-    "ms-azuretools.vscode-docker",
-    "arcanis.vscode-zipfs",
-    "christian-kohler.npm-intellisense",
-    "pflannery.vscode-versionlens"
-  ],
+	"dbaeumer.vscode-eslint",
+	"ms-azuretools.vscode-docker",
+	"arcanis.vscode-zipfs",
+	"christian-kohler.npm-intellisense",
+	"pflannery.vscode-versionlens",
+	"esbenp.prettier-vscode"
+],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [],
   // Uncomment the next line to run commands after the container is created - for example installing curl.

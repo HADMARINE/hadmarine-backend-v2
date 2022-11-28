@@ -135,7 +135,7 @@ export class AuthService {
     password: string,
     customSalt: string = undefined,
   ): { password: string; enckey: string } {
-    const buf: string = customSalt || randomBytes(64).toString();
+    const buf: string = customSalt || randomBytes(64).toString('base64');
     const key: string = pbkdf2Sync(
       password,
       buf,

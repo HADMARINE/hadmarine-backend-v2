@@ -12,6 +12,7 @@ import {
 } from './dto/find-all-blogpost.dto';
 import { UtilsService } from 'src/utils/utils.service';
 import { DataNotFoundException } from 'src/errors/exceptions/data-not-found.exception';
+import { HttpExceptionFactory } from 'src/errors/http-exception-factory.class';
 
 @Injectable()
 export class BlogpostsService {
@@ -40,46 +41,73 @@ export class BlogpostsService {
   }
 
   async findAll(findAllBlogpostDto: FindAllBlogpostDto) {
-    let blogs: BlogpostDocument[] | [];
+    const query = this.utilsService.queryNullableFilter({
+      title: findAllBlogpostDto.query?.title,
+      subtitle: findAllBlogpostDto.query?.subtitle,
+      tags: { $all: findAllBlogpostDto.query?.tags },
+      createdDate: {
+        $lte: findAllBlogpostDto.query?.createdDate?.to,
+        $gte: findAllBlogpostDto.query?.createdDate?.from,
+      },
+      modifiedDate: {
+        $lte: findAllBlogpostDto.query?.modifiedDate?.to,
+        $gte: findAllBlogpostDto.query?.modifiedDate?.from,
+      },
+    });
+
+    const sort =
+      (findAllBlogpostDto.sort?.field &&
+        findAllBlogpostDto.sort?.order && {
+          [findAllBlogpostDto.sort.field]:
+            findAllBlogpostDto.sort.order.toLowerCase() as 'asc' | 'desc',
+        }) ||
+      {};
+
     try {
-      blogs = await this.blogpostModel
-        .find(
-          this.utilsService.queryNullableFilter({
-            title: findAllBlogpostDto.title,
-            subtitle: findAllBlogpostDto.subtitle,
-            tags: { $all: findAllBlogpostDto.tags },
-            date: {
-              $lte: findAllBlogpostDto.date?.to,
-              $gte: findAllBlogpostDto.date?.from,
-            },
-          }),
-        )
+      const blogposts = await this.blogpostModel
+        .find(query)
         .skip(
-          findAllBlogpostDto.offset || findAllBlogpostDtoDefaultValue.offset,
+          findAllBlogpostDto.pagination?.offset ||
+            findAllBlogpostDtoDefaultValue.pagination.offset,
         )
         .limit(
-          findAllBlogpostDto.limit || findAllBlogpostDtoDefaultValue.limit,
-        );
+          findAllBlogpostDto.pagination?.limit ||
+            findAllBlogpostDtoDefaultValue.pagination.limit,
+        )
+        .sort(sort);
+      if (blogposts.length === 0) {
+        throw new DataNotFoundException({ name: 'blogpost' });
+      }
+      const total = await this.blogpostModel.count(query);
+      return { data: blogposts, total };
     } catch (e) {
+      console.log(e);
+      if (e instanceof HttpExceptionFactory) {
+        throw e;
+      }
+
       throw new DatabaseExecutionException({
         action: 'findAll',
         database: 'blogpost',
       });
     }
-    if (blogs.length === 0) {
-      throw new DataNotFoundException({ name: 'blogpost' });
-    }
-    return blogs;
   }
 
   async findOne(id: string): Promise<BlogpostDocument> {
     try {
       const blogpost = await this.blogpostModel.findById(id);
+      await this.blogpostModel.findByIdAndUpdate(id, {
+        viewCount: blogpost.viewCount + 1,
+      });
       if (!blogpost) {
         throw new DataNotFoundException({ name: 'blogpost' });
       }
       return blogpost;
-    } catch {
+    } catch (e) {
+      if (e instanceof HttpExceptionFactory) {
+        throw e;
+      }
+
       throw new DatabaseExecutionException({
         action: 'findOne',
         database: 'blogpost',
@@ -92,12 +120,16 @@ export class BlogpostsService {
     updateBlogpostDto: UpdateBlogpostDto,
   ): Promise<void> {
     try {
-      const blogpost = await this.blogpostModel.findByIdAndUpdate(
-        id,
-        updateBlogpostDto,
-      );
+      const blogpost = await this.blogpostModel.findByIdAndUpdate(id, {
+        ...updateBlogpostDto,
+        modifiedDate: new Date(),
+      });
       if (!blogpost) throw new DataNotFoundException({ name: 'blogpost' });
-    } catch {
+    } catch (e) {
+      if (e instanceof HttpExceptionFactory) {
+        throw e;
+      }
+
       throw new DatabaseExecutionException({
         action: 'update',
         database: 'blogpost',
@@ -105,13 +137,36 @@ export class BlogpostsService {
     }
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string): Promise<BlogpostDocument> {
     try {
       const blogpost = await this.blogpostModel.findByIdAndDelete(id);
+
       if (!blogpost) throw new DataNotFoundException({ name: 'blogpost' });
-    } catch {
+
+      return blogpost;
+    } catch (e) {
+      if (e instanceof HttpExceptionFactory) {
+        throw e;
+      }
+
       throw new DatabaseExecutionException({
         action: 'remove',
+        database: 'blogpost',
+      });
+    }
+  }
+
+  async getTags(): Promise<string[]> {
+    try {
+      const tags = await this.blogpostModel.distinct('tags');
+      if (!tags) throw new DataNotFoundException({ name: 'blogpost/tags' });
+      return tags as string[];
+    } catch (e) {
+      if (e instanceof HttpExceptionFactory) {
+        throw e;
+      }
+      throw new DatabaseExecutionException({
+        action: 'getTags',
         database: 'blogpost',
       });
     }

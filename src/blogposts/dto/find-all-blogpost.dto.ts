@@ -1,9 +1,10 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsBooleanString, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { DateRangeDto } from 'src/dtos/date-range.dto';
 import { PaginationQueryDto } from 'src/dtos/pagination-query.dto';
+import { DataSortDto } from 'src/dtos/data-sort.dto';
 
-export class FindAllBlogpostDto extends PaginationQueryDto {
+class BlogPostQuery {
   @IsOptional()
   @IsString()
   title?: string;
@@ -18,10 +19,31 @@ export class FindAllBlogpostDto extends PaginationQueryDto {
 
   @IsOptional()
   @Type(() => DateRangeDto)
-  date?: DateRangeDto;
+  createdDate?: DateRangeDto;
+
+  @IsOptional()
+  @Type(() => DateRangeDto)
+  modifiedDate?: DateRangeDto;
+
+  @IsOptional()
+  @IsBooleanString()
+  isPrivate?: boolean;
+}
+
+export class FindAllBlogpostDto {
+  @IsOptional()
+  @Type(() => BlogPostQuery)
+  query?: BlogPostQuery;
+
+  @IsOptional()
+  @Type(() => PaginationQueryDto)
+  pagination?: PaginationQueryDto;
+
+  @IsOptional()
+  @Type(() => DataSortDto)
+  sort?: DataSortDto;
 }
 
 export const findAllBlogpostDtoDefaultValue: FindAllBlogpostDto = {
-  limit: 10,
-  offset: 0,
+  pagination: { limit: 10, offset: 0 },
 };

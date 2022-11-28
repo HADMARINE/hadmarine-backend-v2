@@ -1,5 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsObject, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsDateString,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 
 export class CreatePortfolioDto {
   @IsString()
@@ -13,7 +19,7 @@ export class CreatePortfolioDto {
   @IsUrl()
   thumbnail?: string;
 
-  @IsDate()
+  @IsDateString()
   date: Date;
 
   @IsString()

@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HttpExceptionFactory } from '../errors/http-exception-factory.class';
@@ -11,7 +12,13 @@ import { getI18nContextFromArgumentsHost } from 'nestjs-i18n';
 
 @Catch(HttpException)
 export class HttpExceptionFactoryFilter implements ExceptionFilter {
+  private logger = new Logger(HttpExceptionFactoryFilter.name);
+
   async catch(exception: HttpExceptionFactory, host: ArgumentsHost) {
+    if (['development', 'test'].includes(process.env.NODE_ENV)) {
+      this.logger.error(exception);
+    }
+
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

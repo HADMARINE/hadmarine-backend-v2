@@ -3,8 +3,9 @@ import { Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 import { DateRangeDto } from 'src/dtos/date-range.dto';
 import { PaginationQueryDto } from 'src/dtos/pagination-query.dto';
+import { DataSortDto } from 'src/dtos/data-sort.dto';
 
-export class FindAllPortfolioDto extends PaginationQueryDto {
+class PortfolioQuery {
   @IsOptional()
   @IsString()
   title?: string;
@@ -19,7 +20,20 @@ export class FindAllPortfolioDto extends PaginationQueryDto {
   date?: DateRangeDto;
 }
 
+export class FindAllPortfolioDto {
+  @IsOptional()
+  @Type(() => PortfolioQuery)
+  query?: PortfolioQuery;
+
+  @IsOptional()
+  @Type(() => PaginationQueryDto)
+  pagination?: PaginationQueryDto;
+
+  @IsOptional()
+  @Type(() => DataSortDto)
+  sort?: DataSortDto;
+}
+
 export const findAllPortfolioDtoDefaultValue: FindAllPortfolioDto = {
-  limit: 10,
-  offset: 0,
+  pagination: { limit: 10, offset: 0 },
 };

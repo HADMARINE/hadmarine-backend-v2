@@ -1,19 +1,23 @@
 import { Controller, Get } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
 import { AppService } from './app.service';
-import { PageNotFoundException } from './errors/exceptions/page-not-found.exception';
+import packageJson from '../package.json';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @Throttle(1, 60)
-  getHello(): string {
-    return 'Hello';
-    throw new PageNotFoundException();
-    // throw new HttpException({ Hello: 'world' }, 400);
-    // throw new UnauthorizedException();
-    // return this.appService.getHello();
+  main(): string {
+    return 'UP';
+  }
+
+  @Get('status')
+  getStatus(): string {
+    return 'UP';
+  }
+
+  @Get('version')
+  getVersion(): string {
+    return packageJson.version;
   }
 }
