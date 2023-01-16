@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HttpExceptionFactory } from '../errors/http-exception-factory.class';
-import { getI18nContextFromArgumentsHost } from 'nestjs-i18n';
+import { getContextObject } from 'nestjs-i18n';
 
 @Catch(HttpException)
 export class HttpExceptionFactoryFilter implements ExceptionFilter {
@@ -24,7 +24,7 @@ export class HttpExceptionFactoryFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    const i18n = getI18nContextFromArgumentsHost(host);
+    const i18n = getContextObject(host);
 
     const code =
       exception.errorDetails?.code ||
